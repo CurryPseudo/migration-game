@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Direction {
-	up = 1,
-	down = -1,
-	right = 10,
-	left = -10,
-}
+public class Controller {
+	private enum Direction {
+		up = 1,
+		down = -1,
+		right = 10,
+		left = -10,
+	}
 
-public class Controller : MonoBehaviour {
 	public Vector2 PositionInMap = new Vector2(0, 0);
 	public float Speed;
 	public Vector2 fiction = new Vector2(0.5f, 0.5f);
@@ -21,24 +21,17 @@ public class Controller : MonoBehaviour {
 	private	Vector2 direction = new Vector2(0, 0);
 
 
-
-
-	private void Awake() {
-		_transform = gameObject.GetComponent<Transform>();
-	}
-
 	private void Update() {
+		GetMoveDirection();
+		CheckCollision();
 		Move();
 	}
-
-
-
 
 
 	/// <summary>
 	/// 玩家控制的方向
 	/// </summary>
-	public Vector2 GetMoveDirection() {
+	private Vector2 GetMoveDirection() {
 		int dirValue = 0;
 		Vector2 moveDir = new Vector2(0, 0);
 		if (Input.GetKey(KeyCode.W)) {
@@ -71,7 +64,7 @@ public class Controller : MonoBehaviour {
 	/// <summary>
 	/// 碰撞检测
 	/// </summary>
-	public void CheckCollision() {
+	private void CheckCollision() {
 		Vector2 velocity = new Vector2(0, 0);
 		Vector2 currentMU = new Vector2(Mathf.FloorToInt(PositionInMap.x), Mathf.FloorToInt(PositionInMap.y));
 		Vector2 moveDir = GetMoveDirection();
@@ -81,8 +74,11 @@ public class Controller : MonoBehaviour {
 			if (moveDir.x > 0.9f) {
 				direction = new Vector2(1, -1).normalized * fiction;
 			}
-			if (moveDir.y > 0.9f) {
+			else if (moveDir.y > 0.9f) {
 				direction = new Vector2(-1, 1).normalized * fiction;
+			}
+			else if (moveDir.x > 0 && moveDir.y > 0) {
+				direction = new Vector2(0, 0);
 			}
 		}
 		// 左上有障碍物
@@ -91,8 +87,11 @@ public class Controller : MonoBehaviour {
 			if (moveDir.x < -0.9f) {
 				direction = new Vector2(-1, -1).normalized * fiction;
 			}
-			if (moveDir.y > 0.9f) {
+			else if (moveDir.y > 0.9f) {
 				direction = new Vector2(1, 1).normalized * fiction;
+			}
+			else if (moveDir.x > 0 && moveDir.y > 0) {
+				direction = new Vector2(0, 0);
 			}
 		}
 		// 右下有障碍物
@@ -101,8 +100,11 @@ public class Controller : MonoBehaviour {
 			if (moveDir.x > 0.9f) {
 				direction = new Vector2(1, 1).normalized * fiction;
 			}
-			if (moveDir.y < -0.9f) {
+			else if (moveDir.y < -0.9f) {
 				direction = new Vector2(-1, -1).normalized * fiction;
+			}
+			else if (moveDir.x > 0 && moveDir.y > 0) {
+				direction = new Vector2(0, 0);
 			}
 		}
 		// 左下有障碍物
@@ -111,12 +113,14 @@ public class Controller : MonoBehaviour {
 			if (moveDir.x < -0.9f) {
 				direction = new Vector2(-1, 1).normalized * fiction;
 			}
-			if (moveDir.y < -0.9f) {
+			else if (moveDir.y < -0.9f) {
 				direction = new Vector2(1, -1).normalized * fiction;
+			}
+			else if (moveDir.x > 0 && moveDir.y > 0) {
+				direction = new Vector2(0, 0);
 			}
 		}
 	}
-
 	public void Move() {
 		PositionInMap.x += direction.x * Speed * Time.deltaTime;
 		PositionInMap.y += direction.y * Speed * Time.deltaTime;
