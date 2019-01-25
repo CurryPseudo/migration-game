@@ -66,7 +66,7 @@ public class Map : IMap {
         //Debug.Log("to map: " + result.ToString());
         return result;
     }
-    public Vector2 MapToWorldPoint(Vector2Int mapPoint) {
+    public Vector2 MapToWorldPoint(Vector2 mapPoint) {
         //Debug.Log("map: " + mapPoint);
         Vector2 result = mapPoint.x * UAxis + mapPoint.y * VAxis + originPoint;
         //Debug.Log("to world: " + result);
