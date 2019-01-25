@@ -6,6 +6,28 @@ public interface IMapUnit {
     IEnumerable<Vector2Int> GetPositions();
     void SetPosition(Vector2Int originPoint);
 }
+public class OutsideMapUnit : IMapUnit
+{
+    public Vector2Int GetOriginPoint()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public IEnumerable<Vector2Int> GetPositions()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public IEnumerable<Vector2Int> GetSizeUnitOffset()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void SetPosition(Vector2Int originPoint)
+    {
+        throw new System.NotImplementedException();
+    }
+}
 public abstract class MapUnit : IMapUnit
 {
     public abstract Vector2Int GetOriginPoint();

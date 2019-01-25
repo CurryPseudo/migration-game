@@ -1,15 +1,16 @@
-using System;
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
+using Sirenix.OdinInspector;
+using Sirenix.Serialization;
 public interface IMap {
     IMapUnit GetMapUnit(int x, int y);
 }
 
-[Serializable]
 public class Map : IMap {
-    private List<List<IMapUnit>> data = new List<List<IMapUnit>>();
-    private Vector2Int lastSize = Vector2Int.zero;
+    public List<List<IMapUnit>> data = new List<List<IMapUnit>>();
+    [ReadOnly]
+    public Vector2Int lastSize = Vector2Int.zero;
     public Vector2Int size;
     public float angle;
     public float length;
@@ -37,11 +38,11 @@ public class Map : IMap {
         List<IMapUnit> units = new List<IMapUnit>(GetAllUnits());
         if(lastSize != size) {
             data.Clear(); 
-            var unitRow = new List<IMapUnit>();
-            for(int i = 0; i < size.y; i++) {
-                unitRow.Add(null);
-            }
             for(int i = 0; i < size.x; i++) {
+                var unitRow = new List<IMapUnit>();
+                for(int j = 0; j < size.y; j++) {
+                    unitRow.Add(null);
+                }
                 data.Add(unitRow);
             }
             foreach(var unit in units) {
@@ -110,6 +111,9 @@ public class Map : IMap {
     }
     public IMapUnit GetMapUnit(int x, int y)
     {
+        if(x < 0 || x >= size.x || y < 0 || y >= size.y) {
+            return new OutsideMapUnit();
+        }
         return data[x][y];
     }
     public void SetMapUnit(int x, int y, IMapUnit mapUnit) {

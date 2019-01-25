@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Controller {
+[Serializable]
+public class Player {
 	private enum Direction {
 		up = 1,
 		down = -1,
@@ -15,13 +17,12 @@ public class Controller {
 	public Vector2 fiction = new Vector2(0.5f, 0.5f);
 
 
-	private IMap iMap;
- 	private Transform _transform;
-	private float playerRadius = 0.25f;
+	public IMap map;
+	public float playerRadius = 0.25f;
 	private	Vector2 direction = new Vector2(0, 0);
 
 
-	private void Update() {
+	public void Update() {
 		GetMoveDirection();
 		CheckCollision();
 		Move();
@@ -65,11 +66,10 @@ public class Controller {
 	/// 碰撞检测
 	/// </summary>
 	private void CheckCollision() {
-		Vector2 velocity = new Vector2(0, 0);
 		Vector2 currentMU = new Vector2(Mathf.FloorToInt(PositionInMap.x), Mathf.FloorToInt(PositionInMap.y));
 		Vector2 moveDir = GetMoveDirection();
 		// 右上有障碍物
-		if ((iMap.GetMapUnit((int)currentMU.x + 1, (int)currentMU.y) != null) && (Mathf.Abs(PositionInMap.x - currentMU.x) >= playerRadius)) {
+		if ((map.GetMapUnit((int)currentMU.x + 1, (int)currentMU.y) != null) && (Mathf.Abs(PositionInMap.x - currentMU.x) >= playerRadius)) {
 			// 调整移动方向
 			if (moveDir.x > 0.9f) {
 				direction = new Vector2(1, -1).normalized * fiction;
@@ -82,7 +82,7 @@ public class Controller {
 			}
 		}
 		// 左上有障碍物
-		if ((iMap.GetMapUnit((int)currentMU.x, (int)currentMU.y + 1) != null) && (Mathf.Abs(PositionInMap.x - currentMU.x) >= playerRadius)) {
+		if ((map.GetMapUnit((int)currentMU.x, (int)currentMU.y + 1) != null) && (Mathf.Abs(PositionInMap.x - currentMU.x) >= playerRadius)) {
 			// 调整移动方向
 			if (moveDir.x < -0.9f) {
 				direction = new Vector2(-1, -1).normalized * fiction;
@@ -95,7 +95,7 @@ public class Controller {
 			}
 		}
 		// 右下有障碍物
-		if ((iMap.GetMapUnit((int)currentMU.x, (int)currentMU.y - 1) != null) && (Mathf.Abs(PositionInMap.x - currentMU.x) >= playerRadius)) {
+		if ((map.GetMapUnit((int)currentMU.x, (int)currentMU.y - 1) != null) && (Mathf.Abs(PositionInMap.x - currentMU.x) >= playerRadius)) {
 			// 调整移动方向
 			if (moveDir.x > 0.9f) {
 				direction = new Vector2(1, 1).normalized * fiction;
@@ -108,7 +108,7 @@ public class Controller {
 			}
 		}
 		// 左下有障碍物
-		if ((iMap.GetMapUnit((int)currentMU.x - 1, (int)currentMU.y) != null) && (Mathf.Abs(PositionInMap.x - currentMU.x) >= playerRadius)) {
+		if ((map.GetMapUnit((int)currentMU.x - 1, (int)currentMU.y) != null) && (Mathf.Abs(PositionInMap.x - currentMU.x) >= playerRadius)) {
 			// 调整移动方向
 			if (moveDir.x < -0.9f) {
 				direction = new Vector2(-1, 1).normalized * fiction;
@@ -124,5 +124,27 @@ public class Controller {
 	public void Move() {
 		PositionInMap.x += direction.x * Speed * Time.deltaTime;
 		PositionInMap.y += direction.y * Speed * Time.deltaTime;
+	}
+}
+
+
+public class PlayerController : MonoBehaviour {
+	public MapController mapController;
+	public Player player;	 
+    public Vector2 Position {
+        get {
+            return transform.position;
+        }
+        set {
+            transform.position = new Vector3(value.x, value.y, transform.position.z);
+        }
+    }
+	public void Start() {
+		player.map = mapController.map;
+	}
+	public void Update() {
+		player.PositionInMap = mapController.map.WorldToMapPoint(Position);
+		player.Update();
+		Position = mapController.map.MapToWorldPoint(player.PositionInMap);
 	}
 }
