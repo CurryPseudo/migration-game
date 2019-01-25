@@ -8,7 +8,6 @@ public interface IMap {
 
 [Serializable]
 public class Map : IMap {
-    [SerializeField]
     private List<List<IMapUnit>> data = new List<List<IMapUnit>>();
     private Vector2Int lastSize = Vector2Int.zero;
     public Vector2Int size;
@@ -51,7 +50,11 @@ public class Map : IMap {
         }
         lastSize = size;
     }
-    public Vector2Int WorldToMapPoint(Vector2 worldPoint) {
+    public Vector2Int WorldToMapPointRounded(Vector2 worldPoint) {
+        Vector2 result = WorldToMapPoint(worldPoint);
+        return new Vector2Int(Mathf.RoundToInt(result.x), Mathf.RoundToInt(result.y));
+    }
+    public Vector2 WorldToMapPoint(Vector2 worldPoint) {
         //Debug.Log("world: " + worldPoint.ToString());
         Vector2 offset = worldPoint - originPoint;
         Vector2 u = UAxis;
@@ -59,7 +62,7 @@ public class Map : IMap {
         float a = u.y * v.x - u.x * v.y;
         float fv = (u.y * offset.x - u.x * offset.y) / a;
         float fu = (v.x * offset.y - v.y * offset.x) / a;
-        Vector2Int result = ClampPosition(new Vector2Int(Mathf.RoundToInt(fu), Mathf.RoundToInt(fv)));
+        Vector2 result = ClampPosition(new Vector2(fu, fv));
         //Debug.Log("to map: " + result.ToString());
         return result;
     }
@@ -84,7 +87,7 @@ public class Map : IMap {
             SetMapUnit(pos, unit);
         }
     }
-    public Vector2Int ClampPosition(Vector2Int position) {
+    public Vector2 ClampPosition(Vector2 position) {
         position.x = Mathf.Clamp(position.x, 0, size.x - 1);
         position.y = Mathf.Clamp(position.y, 0, size.y - 1);
         return position;

@@ -18,11 +18,11 @@ public class MapUnitController : MonoBehaviour {
     public void Update() {
         if(mapController != null) {
             if(mapUnit == null) {
-                mapUnit = new SingleMapUnit(mapController.map.WorldToMapPoint(Position));
+                mapUnit = new SingleMapUnit(mapController.map.WorldToMapPointRounded(Position));
                 mapController.map.InsertMapUnit(mapUnit);
             }
             else {
-                mapController.map.UpdateMapUnit(mapUnit, mapController.map.WorldToMapPoint(Position));
+                mapController.map.UpdateMapUnit(mapUnit, mapController.map.WorldToMapPointRounded(Position));
             }
             MapPosReadOnly = mapUnit.GetOriginPoint();
             Position = mapController.map.MapToWorldPoint(MapPosReadOnly);
