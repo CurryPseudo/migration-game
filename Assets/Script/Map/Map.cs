@@ -16,12 +16,12 @@ public class Map : IMap {
     public float length;
     public Vector2 UAxis {
         get {
-            return Vector2Util.RotateAxisDir(angle / 2 + 90, length);
+            return Vector2Util.RotateAxisDir(90 - angle / 2, length);
         }
     }
     public Vector2 VAxis {
         get {
-            return Vector2Util.RotateAxisDir(90 - angle / 2, length);
+            return Vector2Util.RotateAxisDir(angle / 2 + 90, length);
         }
     }
     public Vector2 originPoint;
@@ -51,21 +51,24 @@ public class Map : IMap {
         }
         lastSize = size;
     }
-    public Vector2Int WorldToMapPointRounded(Vector2 worldPoint) {
-        Vector2 result = WorldToMapPoint(worldPoint);
+    public Vector2Int WorldToMapPointClampedRounded(Vector2 worldPoint) {
+        Vector2 result = WorldToMapPointClamped(worldPoint);
         return new Vector2Int(Mathf.RoundToInt(result.x), Mathf.RoundToInt(result.y));
     }
-    public Vector2 WorldToMapPoint(Vector2 worldPoint) {
+    public Vector2 WorldToMapPointClamped(Vector2 worldPoint) {
         //Debug.Log("world: " + worldPoint.ToString());
+        Vector2 result = ClampPosition(WorldToMapPoint(worldPoint));
+        //Debug.Log("to map: " + result.ToString());
+        return result;
+    }
+    public Vector2 WorldToMapPoint(Vector2 worldPoint) {
         Vector2 offset = worldPoint - originPoint;
         Vector2 u = UAxis;
         Vector2 v = VAxis;
         float a = u.y * v.x - u.x * v.y;
         float fv = (u.y * offset.x - u.x * offset.y) / a;
         float fu = (v.x * offset.y - v.y * offset.x) / a;
-        Vector2 result = ClampPosition(new Vector2(fu, fv));
-        //Debug.Log("to map: " + result.ToString());
-        return result;
+        return new Vector2(fu, fv);
     }
     public Vector2 MapToWorldPoint(Vector2 mapPoint) {
         //Debug.Log("map: " + mapPoint);

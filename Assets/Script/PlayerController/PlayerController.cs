@@ -37,6 +37,7 @@ public class Player {
 		Vector2 moveDir = new Vector2(0, 0);
 		if (Input.GetKey(KeyCode.W)) {
 			dirValue += (int)Direction.up;
+			
 		}
 		if (Input.GetKey(KeyCode.A)) {
 			dirValue += (int)Direction.left;
@@ -142,8 +143,29 @@ public class PlayerController : MonoBehaviour {
 	public void Start() {
 		player.map = mapController.map;
 	}
+	private void OnDrawGizmosSelected() {
+		Vector2[] borders = new Vector2[]{
+			new Vector2(-1f, -1f),
+			new Vector2(1f, -1f),
+			new Vector2(1f, 1f),
+			new Vector2(-1f, 1f),
+		};
+		int[] starts = new int[] {
+			0, 1, 2, 3
+		};
+		int[] ends = new int[] {
+			1, 2, 3, 0
+		};
+		for(int i = 0; i < 4; i++) {
+			var start = borders[starts[i]] * player.playerRadius;
+			start = mapController.map.MapToWorldPoint(start + player.PositionInMap);
+			var end = borders[ends[i]] * player.playerRadius;
+			end = mapController.map.MapToWorldPoint(end + player.PositionInMap);
+			Gizmos.DrawLine(start, end);
+		}
+	}
 	public void Update() {
-		player.PositionInMap = mapController.map.WorldToMapPoint(Position);
+		player.PositionInMap = mapController.map.WorldToMapPointClamped(Position);
 		player.Update();
 		Position = mapController.map.MapToWorldPoint(player.PositionInMap);
 	}
