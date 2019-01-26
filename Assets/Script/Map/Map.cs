@@ -5,17 +5,23 @@ using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 public interface IMap {
     IMapUnit GetMapUnit(int x, int y);
-    void Init();
+    void _Init();
 }
 
 public class Map : IMap {
     private Dictionary<IMapUnit, List<Vector2Int>> unitPositionsMap = new Dictionary<IMapUnit, List<Vector2Int>>();
+    public int screenWidth;
+    [System.NonSerialized]
+    public List<MapUnitController> unitControllers;
+    private List<MapGround>[,] grounds;
+    private List<MapUnit>[] showingUnit;
     public List<List<IMapUnit>> data = new List<List<IMapUnit>>();
     [ReadOnly]
     public Vector2Int lastSize = Vector2Int.zero;
     public Vector2Int size;
     public float angle;
     public float length;
+    public int currentScreenX = 0;
     public Vector2 UAxis {
         get {
             return Vector2Util.RotateAxisDir(90 - angle / 2, length);
@@ -36,25 +42,124 @@ public class Map : IMap {
             }
         }
     }
-    [Button("Resize")]
-    public void Init() {
-        unitPositionsMap = new Dictionary<IMapUnit, List<Vector2Int>>();
-    }
-    public void Resize() {
-        List<IMapUnit> units = new List<IMapUnit>();
-        foreach(var unit in GetAllUnits()) {
-            bool ifAdd = true;
-            foreach(var pos in unit.GetPositionsInt()) {
-                if(!(pos.x >= 0 && pos.x < size.x && pos.y >= 0 && pos.y < size.y)) {
-                    unit.GetController().gameObject.SetActive(false);
-                    ifAdd = false;
-                    break;
+    public void _Init() {
+        grounds = new List<MapGround>[size.x, size.y];
+        showingUnit = new List<MapUnit>[size.x - screenWidth + 1];
+        foreach(var ground in Object.FindObjectsOfType<MapGround>()) {
+            var pos = ground.GetComponent<MapGridPosition>();
+            if(pos != null) {
+                var list = grounds[pos.MapPositionInt.x, pos.MapPositionInt.y];
+                if(list == null) {
+                    list = new List<MapGround>();
+                    grounds[pos.MapPositionInt.x, pos.MapPositionInt.y] = list;
                 }
-            }
-            if(ifAdd) {
-                units.Add(unit);
+                list.Add(ground);
+                ground.gameObject.SetActive(InScreen(pos.MapPositionInt));
             }
         }
+        foreach(var mapUnit in unitControllers) {
+            mapUnit.gameObject.SetActive(AllInScreen(mapUnit.mapUnit.GetPositionsInt()));
+            int x = mapUnit.mapUnit.GetOriginPointInt().x - screenWidth;
+            if(x >= 0) {
+                var list = showingUnit[x];
+                if(list == null) {
+                    list = new List<MapUnit>();
+                    showingUnit[x] = list;
+                }
+                list.Add(mapUnit.mapUnit);
+            }
+        }
+    }
+    public void FallAllCurrentGround() {
+        for(int i = 0; i < size.y; i++) {
+            foreach(var ground in grounds[currentScreenX, i]) {
+                ground.ChangeState(ground.Fall());
+            }
+        }
+    }
+    public float GetNextMoveOnTime() {
+        return 60f + 1f / 8f * currentScreenX * currentScreenX - 5 * currentScreenX;
+    }
+    public IEnumerator WaitToMoveOn() {
+        for(int i = 0; i < size.y; i++) {
+            foreach(var ground in grounds[currentScreenX, i]) {
+                ground.ChangeState(ground.Alert());
+            }
+        }
+        {
+            float timeCount = 0;
+            while(timeCount < GetNextMoveOnTime()) {
+                yield return null;
+                for(int i = 0; i < size.y; i++) {
+                    foreach(var ground in grounds[currentScreenX, i]) {
+                        ground.alertCycle = AlertCycle(GetNextMoveOnTime() - timeCount);
+                    }
+                }
+                timeCount += Time.deltaTime;
+            }
+        }
+        yield break;
+    }
+    public float AlertCycle(float timeLeft) {
+        if(timeLeft > 30f) {
+            return 2f;
+        }
+        else if(timeLeft > 15f) {
+            return 1.5f;
+        }
+        else if(timeLeft > 10f) {
+            return 1f;
+        }
+        else if (timeLeft > 5f) {
+            return 0.5f;
+        }
+        else {
+            return 0.25f;
+        }
+    }
+    public void MoveOnActive() {
+        for(int i = 0; i < size.y; i++) {
+            {
+                foreach(var ground in grounds[currentScreenX, i]) {
+                    ground.gameObject.SetActive(false);
+                }
+                var unit = GetMapUnit(currentScreenX, i);
+                if(unit != null) {
+                    unit.GetController().gameObject.SetActive(false);
+                }
+            }
+        }
+        currentScreenX++;
+        for(int i = 0; i < size.y; i++) {
+            foreach(var ground in grounds[currentScreenX - 1 + screenWidth, i]) {
+                ground.gameObject.SetActive(true);
+            }
+            {
+                var list = showingUnit[currentScreenX - 1];
+                if(list != null) {
+                    foreach(var unit in list) {
+                        unit.GetController().gameObject.SetActive(true);
+                    }
+                }
+            }
+        }
+    }
+    public bool AllInScreen(IEnumerable<Vector2Int> positions) {
+        foreach(var pos in positions) {
+            if(!InScreen(pos)) return false;
+        }
+        return true;
+    }
+    public bool InScreen(Vector2Int pos) {
+        return pos.x >= currentScreenX && pos.x < currentScreenX + screenWidth && pos.y >= 0 && pos.y < size.y;
+    }
+    public Vector2 ScreenClamp(Vector2 pos) {
+        pos.x = Mathf.Clamp(pos.x, currentScreenX - 0.5f, currentScreenX + screenWidth - 0.5f);
+        pos.y = Mathf.Clamp(pos.y, -0.5f, size.y - 0.5f);
+        return pos;
+    }
+    [Button("Resize")]
+    public void Resize() {
         data.Clear(); 
         for(int i = 0; i < size.x; i++) {
             var unitRow = new List<IMapUnit>();
@@ -62,9 +167,6 @@ public class Map : IMap {
                 unitRow.Add(null);
             }
             data.Add(unitRow);
-        }
-        foreach(var unit in units) {
-            InsertMapUnit(unit);
         }
         lastSize = size;
     }
@@ -104,6 +206,7 @@ public class Map : IMap {
     }
     public void InsertMapUnit(IMapUnit unit) {
         Debug.Assert(AreaEmpty(unit.GetPositionsInt()));
+        if(unitPositionsMap == null) unitPositionsMap = new Dictionary<IMapUnit, List<Vector2Int>>();
         unitPositionsMap.Add(unit, new List<Vector2Int>());
         foreach(var pos in unit.GetPositionsInt()) {
             SetMapUnit(pos, unit);
@@ -132,7 +235,7 @@ public class Map : IMap {
     }
     public IMapUnit GetMapUnit(int x, int y)
     {
-        if(x < 0 || x >= size.x || y < 0 || y >= size.y) {
+        if(!InScreen(new Vector2Int(x, y))) {
             return new OutsideMapUnit();
         }
         return data[x][y];

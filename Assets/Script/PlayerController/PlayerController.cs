@@ -45,7 +45,6 @@ public class Player {
 		if(migrationInput.OpenTechTree()) {
 			if(notInTechTree) {
 				IMapUnit unit;
-				Interactive interactive;
 				unit = UnitExist();
 				if (unit != null && unit.GetController() != null) {
 					if(unit.GetController().GetComponent<House>() != null) {
@@ -232,7 +231,7 @@ public class PlayerController : MonoBehaviour {
 				player.Update();
 			}
 			Vector2 direction = mapController.map.MapToWorldDirection(player.Forward);
-			if(ClipPlayer != null) {
+			if(ClipPlayer != null && Time.timeScale > 0) {
 				string clipName = "";
 				if(direction.normalized.y > 0.8f) {
 					clipName = "Top";

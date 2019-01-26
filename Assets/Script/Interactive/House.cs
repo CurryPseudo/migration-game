@@ -178,4 +178,7 @@ public class House : Interactive {
         unHandledAction = null;
         ChangeState(Idle());
     }
+    private void OnDisable() {
+        mapController.gameover = true;
+    }
 }

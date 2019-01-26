@@ -36,6 +36,9 @@ public class AnimationClipPlayer : MonoBehaviour {
 		}
 		playableGraph.Play();
 	}
+	private void Update() {
+		animationMixer.SetSpeed(Time.timeScale);
+	}
 	public void PlayClip(string clipName) {
 		if(!clipIndexes.ContainsKey(clipName)) {
 			return;
