@@ -149,8 +149,10 @@ public class Player {
 		unit = UnitExist();
 		if (unit != null && unit.GetController() != null) {
 			interactive = unit.GetController().GetComponent<Interactive>();
-			if (migrationInput.GetInputInteraction()) {
-				interactive.Interaction(controller);
+			if(interactive != null) {
+				if (migrationInput.GetInputInteraction()) {
+					interactive.Interaction(controller);
+				}
 			}
 		}
 	}
