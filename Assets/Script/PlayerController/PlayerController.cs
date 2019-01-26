@@ -160,7 +160,7 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 	public void Update() {
-		player.PositionInMap = mapController.map.WorldToMapPointClamped(Position);
+		player.PositionInMap = mapController.map.WorldToMapPoint(Position);
 		player.Update();
 		Position = mapController.map.MapToWorldPoint(player.PositionInMap);
 	}
