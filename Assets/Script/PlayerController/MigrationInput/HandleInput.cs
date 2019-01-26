@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class HandleInput : MigrationInput {
 
+	private float lastInput = 0;
+
 	public override Vector2 GetInputAxis() {
 		Vector2 moveDir = new Vector2(0, 0);
 		if (Input.GetAxisRaw("HorizontalHandle") > 0.3) {
@@ -37,9 +39,12 @@ public class HandleInput : MigrationInput {
 	}
 
 	public override bool GetInputInteraction() {
-		if (Input.GetAxis( "Button_A" ) > 0.2)
-			return true;
+		bool GetButtonDown;
+		if (Input.GetAxis( "Button_A" ) > 0.2 && lastInput == 0)
+			GetButtonDown = true;
 		else
-			return false;
+			GetButtonDown = false;
+		lastInput = Input.GetAxis("Button_A");
+		return GetButtonDown;
 	}
 }
