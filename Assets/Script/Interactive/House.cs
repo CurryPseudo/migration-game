@@ -6,6 +6,7 @@ using Sirenix.Serialization;
 
 public class House : Interactive {
     public IEnumerator currentState;
+    public string stateName;
     public float movingSpeed;
     public MapUnitController unitController;
     public MapController mapController;
@@ -102,6 +103,7 @@ public class House : Interactive {
     }
     private Action<PlayerController> unHandledAction = null;
     public IEnumerator Idle() {
+        stateName = "Idle";
         unHandledAction = (playerController) => {
             playerController.ChangeState(playerController.Idle());
             handledPlayers.Remove(playerController);
@@ -111,6 +113,7 @@ public class House : Interactive {
         }
     }
     public IEnumerator Moving(Vector2Int direction) {
+        stateName = "Moving";
         List<PlayerController> relasePlayers = new List<PlayerController>();
         unHandledAction = (playerController) => {
             relasePlayers.Add(playerController);
@@ -132,6 +135,7 @@ public class House : Interactive {
                     housePos = Vector2.Lerp(start, end, timeCount / moveTime);
                     unitController.mapUnit.SetPosition(housePos);
                     yield return null;
+                    timeCount += Time.deltaTime;
                 }
             }
             unitController.mapUnit.SetPositionInt(end);
@@ -143,6 +147,7 @@ public class House : Interactive {
                     player.ChangeState(player.Idle());
                     handledPlayers.Remove(player);
                 }
+                relasePlayers.Clear();
                 break;
             }
             else if(!MapEmpty(direction)) {
@@ -156,9 +161,7 @@ public class House : Interactive {
                 }
             }
         }
-        foreach(var player in handledPlayers) {
-            player.ChangeState(player.HandledHouse(this, direction));
-        }
         unHandledAction = null;
+        ChangeState(Idle());
     }
 }
