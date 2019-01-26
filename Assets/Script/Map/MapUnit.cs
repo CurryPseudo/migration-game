@@ -5,27 +5,109 @@ public interface IMapUnit {
     IEnumerable<Vector2Int> GetSizeUnitOffset();
     IEnumerable<Vector2Int> GetPositions();
     void SetPosition(Vector2Int originPoint);
+    MapUnitController GetController();
+}
+public class OutsideMapUnit : IMapUnit
+{
+    public MapUnitController GetController()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public IEnumerable<Vector2Int> GetLastPositions()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public Vector2Int GetOriginPoint()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public IEnumerable<Vector2Int> GetPositions()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public IEnumerable<Vector2Int> GetSizeUnitOffset()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Init(Vector2Int originPoint)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Init()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public bool IsDirty()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Revert()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void SetPosition(Vector2Int originPoint)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Update()
+    {
+        throw new System.NotImplementedException();
+    }
 }
 public abstract class MapUnit : IMapUnit
 {
-    public abstract Vector2Int GetOriginPoint();
-    public IEnumerable<Vector2Int> GetPositions() {
+    [System.NonSerialized]
+    public MapUnitController controller;
+    public MapUnitController GetController()
+    {
+        return controller;
+    }
+
+    public virtual IEnumerable<Vector2Int> GetPositions() {
         foreach(var pos in GetSizeUnitOffset()) {
             yield return GetOriginPoint() + pos;
         }
     }
-    public abstract IEnumerable<Vector2Int> GetSizeUnitOffset();
+
+
+    public Vector2Int GetOriginPoint()
+    {
+        return ActualOriginPosition;
+    }
     public abstract void SetPosition(Vector2Int originPoint);
+
+    public abstract IEnumerable<Vector2Int> GetSizeUnitOffset();
+
+
+
+    public abstract Vector2Int ActualOriginPosition {
+        get ;
+    }
 }
 public class SingleMapUnit : MapUnit
 {
-    public Vector2Int originPoint;
-    public SingleMapUnit(Vector2Int originPoint) {
-        this.originPoint = originPoint;
+    public MapGridPosition Grid {
+        get {
+            return controller.GetComponent<MapGridPosition>();
+        }
     }
-    public override Vector2Int GetOriginPoint()
+
+    public override Vector2Int ActualOriginPosition
     {
-        return originPoint;
+        get
+        {
+            return Grid.MapPosition;
+        }
     }
 
     public override IEnumerable<Vector2Int> GetSizeUnitOffset()
@@ -35,6 +117,53 @@ public class SingleMapUnit : MapUnit
 
     public override void SetPosition(Vector2Int originPoint)
     {
-        this.originPoint = originPoint;
+        Grid.MapPosition = originPoint;
+    }
+}
+public class MultipleMapUnit : MapUnit
+{
+    public IEnumerable<MapGridPosition> GridPositions {
+        get {
+            foreach(var grid in controller.GetComponentsInChildren<MapGridPosition>()) {
+                yield return grid;
+            }
+        }
+    }
+
+
+    public override Vector2Int ActualOriginPosition
+    {
+        get
+        {
+            return MinGrid().MapPosition;
+        }
+    }
+
+    private int GridValue(MapGridPosition grid) {
+        return grid.MapPosition.x + grid.MapPosition.y;
+    }
+    public MapGridPosition MinGrid() {
+        MapGridPosition min = null;
+        foreach(var grid in GridPositions) {
+            if(min == null || GridValue(grid) <= GridValue(min)) {
+                min = grid;
+            }
+        }
+        return min;
+    }
+
+    public override IEnumerable<Vector2Int> GetSizeUnitOffset()
+    {
+        foreach(var grid in GridPositions) {
+            yield return grid.MapPosition - GetOriginPoint();
+        }
+    }
+
+    public override void SetPosition(Vector2Int originPoint)
+    {
+        Vector2Int delta = originPoint - GetOriginPoint();
+        foreach(var grid in GridPositions) {
+            grid.MapPosition = grid.MapPosition + delta;
+        }
     }
 }
