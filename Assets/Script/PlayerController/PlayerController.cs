@@ -274,6 +274,17 @@ public class PlayerController : MonoBehaviour {
 			yield return null;
 			player.PositionInMap = house.LocalToMap(local);
 			Position = mapController.map.MapToWorldPoint(player.PositionInMap);
+			Vector2Int side = house.PlayerSide(this);
+			Dictionary<Vector2Int, string> sideAnimationNameMap = new Dictionary<Vector2Int, string>() {
+				{new Vector2Int(-1, 0), "RightTop"},
+				{new Vector2Int(1, 0), "LeftDown"},
+				{new Vector2Int(0, 1), "RightDown"},
+				{new Vector2Int(0, -1), "LeftTop"}
+			};
+			string clipName = sideAnimationNameMap[side];
+			clipName += "Push";
+			clipName += house.stateName == "Moving" ? "Walk" : "Stand";
+			ClipPlayer.PlayClip(clipName);
 			UnHandledInputProcess(house);
 		}
 	}
