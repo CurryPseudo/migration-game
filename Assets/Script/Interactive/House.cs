@@ -27,6 +27,9 @@ public class House : Interactive {
         {new Vector2Int(0, -1), new Vector2Int(0, -1)},
         {new Vector2Int(1, -1), new Vector2Int(0, -1)}
     };
+    public bool HasPlayerSide(PlayerController playerController) {
+        return playerPosSideMap.ContainsKey(PlayerToLocalInt(playerController));
+    }
     public Vector2Int PlayerSide(PlayerController playerController) {
         return playerPosSideMap[PlayerToLocalInt(playerController)];
     }
@@ -35,7 +38,7 @@ public class House : Interactive {
     {
         Debug.Assert(!handledPlayers.Contains(playerController));
         var playerLocal = PlayerToLocalInt(playerController);
-        if(playerController.CouldMoveHouse() && PlaceEmpty(playerLocal)) {
+        if(playerController.CouldMoveHouse() && PlaceEmpty(playerLocal) && HasPlayerSide(playerController)) {
             handledPlayers.Add(playerController);
             playerController.ChangeState(playerController.HandledHouse(this, playerLocal));
         }
@@ -56,7 +59,7 @@ public class House : Interactive {
          };
     public bool MapEmpty(Vector2Int direction) {
         foreach(var collisionArea in directionCollisionCheckMap[direction]) {
-            if(mapController.map.GetMapUnit(collisionArea) != null) {
+            if(mapController.map.GetMapUnit(Vector2Util.RoundToInt(LocalToMap(collisionArea))) != null) {
                 return false;
             }
         }
@@ -116,7 +119,10 @@ public class House : Interactive {
         stateName = "Moving";
         List<PlayerController> relasePlayers = new List<PlayerController>();
         unHandledAction = (playerController) => {
-            relasePlayers.Add(playerController);
+            if(!relasePlayers.Contains(playerController)) {
+                relasePlayers.Add(playerController);
+            }
+
         };
         while(true) {
             foreach(var player in handledPlayers) {
