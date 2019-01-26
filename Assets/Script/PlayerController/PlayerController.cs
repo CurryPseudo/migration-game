@@ -209,7 +209,7 @@ public class PlayerController : MonoBehaviour {
 				player.Update();
 			}
 			Vector2 direction = mapController.map.MapToWorldDirection(player.Forward);
-			if(ClipPlayer != null) {
+			if(ClipPlayer != null && player.canMove) {
 				string clipName = "";
 				if(direction.normalized.y > 0.8f) {
 					clipName = "Top";
