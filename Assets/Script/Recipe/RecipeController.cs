@@ -12,6 +12,8 @@ public class RecipeController : MonoBehaviour {
 	public Recipe[] recipes;
 
 	public WealthController wealthController;
+	public PlayerUnit playerUnit_1;
+	public PlayerUnit playerUnit_2;
 
 	public bool CanMake(string name) {
 		int i = 0;
@@ -42,6 +44,8 @@ public class RecipeController : MonoBehaviour {
 			}
 			recipes[i].Level++;
 		}
+		playerUnit_1.TechCheck(name);
+		playerUnit_2.TechCheck(name);
 	}
 
 	public int GetTechLevel(string name) {

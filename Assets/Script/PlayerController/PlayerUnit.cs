@@ -7,33 +7,33 @@ public class PlayerUnit : MonoBehaviour {
 	public float Cost;
 	public float addSpeed = 0.5f;
 	public float addPushingSpeed = 0.5f;
-	public float CollectSpeed;
-	public int MaxCollectNum;
+	public float addCollectTime = 0.5f;
+	public int collectNum;
+	public int MaxCollectNum = 1;
 	public RecipeController recipeController;
-	public Player player;
 
 	public bool isPushingHouse = false;
-
-
-	private void Start() {
-		player = GetComponent<Player>();
-	}
-
 
 	public void EnergyCost() {
 		if (isPushingHouse) {
 			Energy -= Cost;
 		}
 	}
+	public void ControlMaxEnergy() {
+		if (Energy > 100) {
+			Energy = 100;
+		}
+	}
+
 	public void TechCheck(string techName) {
 		if (techName.Equals("Shoes")) {
-			player.Speed += addSpeed;
+			GetComponent<PlayerController>().player.Speed += addSpeed;
 		}
 		if (techName.Equals("Wheels")) {
-			player.PushingSpeed += addPushingSpeed;
+			GetComponent<PlayerController>().player.PushingSpeed += addPushingSpeed;
 		}
 		if (techName.Equals("Axe")) {
-			CollectSpeed = recipeController.GetTechLevel("Axe");
+			GetComponent<PlayerController>().player.CollectTime -= addCollectTime;
 		}
 		if (techName.Equals("Iron Gloves")) {
 			Cost *= 0.75f;
