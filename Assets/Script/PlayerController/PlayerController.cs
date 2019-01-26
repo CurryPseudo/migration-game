@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 [Serializable]
 public class Player {
@@ -9,11 +10,17 @@ public class Player {
 	[NonSerialized]
 	public PlayerController controller;
 	public Vector2 PositionInMap = new Vector2(0, 0);
+	public bool canMove;
 	public float Speed;
+	public float PushingSpeed;
 	// public Vector2 fiction = new Vector2(0.5f, 0.5f);
 	public IMap map;
 	public float playerRadius = 0.25f;
 	public float interactiveRadius = 0.4f;
+	[Header("TechTreeButton")]
+	public GameObject RecipeMenu;
+    public GameObject myEventSystem;
+    public GameObject firstSelectedGameObject;
 
 	public Vector2 VelocityDir = new Vector2(0, 0);
 	public Vector2 Forward = new Vector2(0, 0);
@@ -98,8 +105,10 @@ public class Player {
 		VelocityDir = moveDir + collisionDir;
 	}
 	public void Move() {
-		PositionInMap.x += VelocityDir.x * Speed * Time.deltaTime;
-		PositionInMap.y += VelocityDir.y * Speed * Time.deltaTime;
+		if (canMove) {
+			PositionInMap.x += VelocityDir.x * Speed * Time.deltaTime;
+			PositionInMap.y += VelocityDir.y * Speed * Time.deltaTime;
+		}
 	}
 
 	public IMapUnit UnitExist() {
@@ -123,6 +132,18 @@ public class Player {
 				interactive.Interaction(controller);
 			}
 		}
+	}
+
+	public void OpenTechTree() {
+		canMove = false;
+		myEventSystem.SetActive(true);
+		RecipeMenu.SetActive(true);
+        myEventSystem.GetComponent<EventSystem> ().SetSelectedGameObject(firstSelectedGameObject);
+	}
+	public void CloseTechTree() {
+		RecipeMenu.SetActive(false);
+		myEventSystem.SetActive(false);
+		canMove = true;
 	}
 }
 

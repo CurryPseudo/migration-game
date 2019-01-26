@@ -47,4 +47,22 @@ public class HandleInput : MigrationInput {
 		lastInput = Input.GetAxis("Button_A");
 		return GetButtonDown;
 	}
+	public override bool OpenTechTree() {
+		bool GetButtonDown;
+		if (Input.GetAxis( "Button_Y" ) > 0.2 && lastInput == 0)
+			GetButtonDown = true;
+		else
+			GetButtonDown = false;
+		lastInput = Input.GetAxis("Button_Y");
+		return GetButtonDown;
+	}
+	public override bool CloseTechTree() {
+		bool GetButtonDown;
+		if (Input.GetAxis( "Button_B" ) > 0.2 && lastInput == 0)
+			GetButtonDown = true;
+		else
+			GetButtonDown = false;
+		lastInput = Input.GetAxis("Button_B");
+		return GetButtonDown;
+	}
 }

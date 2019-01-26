@@ -13,27 +13,44 @@ public class RecipeController : MonoBehaviour {
 
 	public WealthController wealthController;
 
-	public void Manufacturing(string name) {
+	public bool CanMake(string name) {
 		int i = 0;
-		bool canMake = false;
 		foreach (var item in recipes) {
 			if (item.name.Equals(name))
 				break;
 			i++;
 		}
-		for (int j = 0; j < 2; j++) {
-			if (wealthController.wealth[j].count < recipes[i].cost[recipes[i].Level][j] || recipes[i].Level >= recipes[i].cost.Length) {
-				return;
-			}
-			else {
-				canMake = true;
+		for (int j = 0; j <= 2; j++) {
+			if (recipes[i].Level >= recipes[i].cost.Length || wealthController.wealth[j].count < recipes[i].cost[recipes[i].Level][j]) {
+				return false;
 			}
 		}
+		return true;
+	}
+
+	public void Manufacturing(string name) {
+		int i = 0;
+		foreach (var item in recipes) {
+			if (item.name.Equals(name))
+				break;
+			i++;
+		}
+		bool canMake = CanMake(name);
 		if (canMake) {
-			for (int j = 0; j < 2; j++) {
+			for (int j = 0; j <= 2; j++) {
 				wealthController.wealth[j].count -= (int)recipes[i].cost[recipes[i].Level][j];
-				recipes[i].Level++;
 			}
+			recipes[i].Level++;
 		}
+	}
+
+	public int GetTechLevel(string name) {
+		int i = 0;
+		foreach (var item in recipes) {
+			if (item.name.Equals(name))
+				break;
+			i++;
+		}
+		return recipes[i].Level;
 	}
 }
