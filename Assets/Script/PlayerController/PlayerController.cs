@@ -149,6 +149,7 @@ public class Player {
 }
 
 
+[ExecuteInEditMode]
 public class PlayerController : MonoBehaviour {
 	public MapController mapController;
 	public Player player;	 
@@ -186,7 +187,9 @@ public class PlayerController : MonoBehaviour {
 	}
 	public void Update() {
 		player.PositionInMap = mapController.map.WorldToMapPoint(Position);
-		player.Update();
+		if(!Application.isEditor || Application.isPlaying) {
+			player.Update();
+		}
 		Position = mapController.map.MapToWorldPoint(player.PositionInMap);
 	}
 }
