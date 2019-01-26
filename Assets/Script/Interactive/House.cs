@@ -12,6 +12,11 @@ public class House : Interactive {
     public MapController mapController;
     public List<MapGridPosition> gridPositions = new List<MapGridPosition>();
     private List<PlayerController> handledPlayers = new List<PlayerController>();
+    public AnimationClipPlayer ClipPlayer {
+        get {
+            return GetComponentInChildren<AnimationClipPlayer>();
+        }
+    }
     public IEnumerator Main() {
         currentState = Idle();
         StartCoroutine(currentState);
@@ -111,6 +116,9 @@ public class House : Interactive {
             playerController.ChangeState(playerController.Idle());
             handledPlayers.Remove(playerController);
         };
+        if(ClipPlayer != null) {
+            ClipPlayer.PlayClip("Idle");
+        }
         while(true) {
             yield return null;
         }
