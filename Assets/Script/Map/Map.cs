@@ -5,9 +5,11 @@ using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 public interface IMap {
     IMapUnit GetMapUnit(int x, int y);
+    void Init();
 }
 
 public class Map : IMap {
+    private Dictionary<IMapUnit, List<Vector2Int>> unitPositionsMap = new Dictionary<IMapUnit, List<Vector2Int>>();
     public List<List<IMapUnit>> data = new List<List<IMapUnit>>();
     [ReadOnly]
     public Vector2Int lastSize = Vector2Int.zero;
@@ -34,20 +36,35 @@ public class Map : IMap {
             }
         }
     }
-    public void Update() {
-        List<IMapUnit> units = new List<IMapUnit>(GetAllUnits());
-        if(lastSize != size) {
-            data.Clear(); 
-            for(int i = 0; i < size.x; i++) {
-                var unitRow = new List<IMapUnit>();
-                for(int j = 0; j < size.y; j++) {
-                    unitRow.Add(null);
+    [Button("Resize")]
+    public void Init() {
+        unitPositionsMap = new Dictionary<IMapUnit, List<Vector2Int>>();
+    }
+    public void Resize() {
+        List<IMapUnit> units = new List<IMapUnit>();
+        foreach(var unit in GetAllUnits()) {
+            bool ifAdd = true;
+            foreach(var pos in unit.GetPositions()) {
+                if(!(pos.x >= 0 && pos.x < size.x && pos.y >= 0 && pos.y < size.y)) {
+                    unit.GetController().gameObject.SetActive(false);
+                    ifAdd = false;
+                    break;
                 }
-                data.Add(unitRow);
             }
-            foreach(var unit in units) {
-                InsertMapUnit(unit);
+            if(ifAdd) {
+                units.Add(unit);
             }
+        }
+        data.Clear(); 
+        for(int i = 0; i < size.x; i++) {
+            var unitRow = new List<IMapUnit>();
+            for(int j = 0; j < size.y; j++) {
+                unitRow.Add(null);
+            }
+            data.Add(unitRow);
+        }
+        foreach(var unit in units) {
+            InsertMapUnit(unit);
         }
         lastSize = size;
     }
@@ -82,13 +99,12 @@ public class Map : IMap {
         }
         return true;
     }
-    public bool AreaEmpty(IMapUnit unit) {
-        return AreaEmpty(unit.GetPositions());
-    }
     public void InsertMapUnit(IMapUnit unit) {
-        Debug.Assert(AreaEmpty(unit));
+        Debug.Assert(AreaEmpty(unit.GetPositions()));
+        unitPositionsMap.Add(unit, new List<Vector2Int>());
         foreach(var pos in unit.GetPositions()) {
             SetMapUnit(pos, unit);
+            unitPositionsMap[unit].Add(pos);
         }
     }
     public Vector2 ClampPosition(Vector2 position) {
@@ -96,18 +112,17 @@ public class Map : IMap {
         position.y = Mathf.Clamp(position.y, 0, size.y - 1);
         return position;
     }
-    public void UpdateMapUnit(IMapUnit unit, Vector2Int newPosition) {
+    public void UpdateMapUnit(IMapUnit unit) {
         DeleteMapUnit(unit);
-        unit.SetPosition(newPosition);
-        Debug.Assert(AreaEmpty(unit));
+        Debug.Assert(AreaEmpty(unit.GetPositions()));
         InsertMapUnit(unit);
     }
     public void DeleteMapUnit(IMapUnit unit) {
-        foreach(var pos in unit.GetPositions()) {
+        foreach(var pos in unitPositionsMap[unit]) {
             SetMapUnit(pos, null);
         }
+        unitPositionsMap.Remove(unit);
     }
-
     public IMapUnit GetMapUnit(Vector2Int position)
     {
         return GetMapUnit(position.x, position.y);

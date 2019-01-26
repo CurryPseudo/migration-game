@@ -19,8 +19,8 @@ public class MapController : SerializedMonoBehaviour {
             Gizmos.DrawLine(map.MapToWorldPoint(start), map.MapToWorldPoint(end));
         }
     }
-    public void Update() {
-        map.Update();
+    private void Awake() {
+        map.Init();
     }
 
 }
