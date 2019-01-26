@@ -37,7 +37,19 @@ public class KeyboardInput : MigrationInput {
 	}
 
 	public override bool GetInputInteraction() {
-		if (Input.GetKeyDown(KeyCode.Space))
+		if (Input.GetKeyDown(KeyCode.J))
+			return true;
+		else
+			return false;
+	}
+	public override bool OpenTechTree() {
+		if (Input.GetKeyDown(KeyCode.K))
+			return true;
+		else
+			return false;
+	}
+	public override bool CloseTechTree() {
+		if (Input.GetKeyDown(KeyCode.L))
 			return true;
 		else
 			return false;
