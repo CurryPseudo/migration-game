@@ -2,27 +2,61 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 [Serializable]
 public class Player {
 
+	[NonSerialized]
+	public PlayerController controller;
 	public Vector2 PositionInMap = new Vector2(0, 0);
+	public bool notInTechTree;
 	public float Speed;
+	public float PushingSpeed;
 	// public Vector2 fiction = new Vector2(0.5f, 0.5f);
 	public IMap map;
 	public float playerRadius = 0.25f;
 	public float interactiveRadius = 0.4f;
+	[Header("TechTreeButton")]
+	public GameObject RecipeMenu;
+    public GameObject myEventSystem;
+    public GameObject firstSelectedGameObject;
 
-	private	Vector2 VelocityDir = new Vector2(0, 0);
-	private Vector2 Forward = new Vector2(0, 0);
+	public Vector2 VelocityDir = new Vector2(0, 0);
+	public Vector2 Forward = new Vector2(0, 0);
+	public Vector2 WorldForward;
 	private Vector2 currentMapUnit;
-
+	internal MigrationInput migrationInput;
 
 	public void Update() {
-		GetMoveDirection();
-		CheckCollision();
-		Move();
-		InteracitonTrigger();
+		if(notInTechTree) {
+			GetMoveDirection();
+			CheckCollision();
+			Move();
+			InteracitonTrigger();
+		}
+		else {
+			VelocityDir = Vector2.zero;
+		}
+		TechTreeTrigger();
+		WorldForward = controller.mapController.map.MapToWorldDirection(Forward).normalized;
+	}
+	public void TechTreeTrigger() {
+		if(migrationInput.OpenTechTree()) {
+			if(notInTechTree) {
+				IMapUnit unit;
+				Interactive interactive;
+				unit = UnitExist();
+				if (unit != null && unit.GetController() != null) {
+					if(unit.GetController().GetComponent<House>() != null) {
+						OpenTechTree();
+					}
+				}
+			}
+			else {
+				CloseTechTree();
+			}
+		}
 	}
 
 
@@ -30,37 +64,11 @@ public class Player {
 	/// 玩家控制的方向
 	/// </summary>
 	private Vector2 GetMoveDirection() {
-		Vector2 moveDir = new Vector2(0, 0);
-		if (Input.GetAxisRaw("Horizontal") > 0.9f) {
-			moveDir = new Vector2(1, -1).normalized;
-		}
-		if (Input.GetAxisRaw("Horizontal") < -0.9f) {
-			moveDir = new Vector2(-1, 1).normalized;
-		}
-		if (Input.GetAxisRaw("Vertical") > 0.9f) {
-			moveDir = new Vector2(1, 1).normalized;
-		}
-		if (Input.GetAxisRaw("Vertical") < -0.9f) {
-			moveDir = new Vector2(-1, -1).normalized;
-		}
-		if (Input.GetAxisRaw("Horizontal") > 0.5f && Input.GetAxisRaw("Vertical") > 0.5f) {
-			moveDir = new Vector2(1, 0).normalized;
-		}
-		if (Input.GetAxisRaw("Horizontal") > 0.5f && Input.GetAxisRaw("Vertical") < -0.5f) {
-			moveDir = new Vector2(0, -1).normalized;
-		}
-		if (Input.GetAxisRaw("Horizontal") < -0.5f && Input.GetAxisRaw("Vertical") > 0.5f) {
-			moveDir = new Vector2(0, 1).normalized;
-		}
-		if (Input.GetAxisRaw("Horizontal") < -0.5f && Input.GetAxisRaw("Vertical") < -0.5f) {
-			moveDir = new Vector2(-1, 0).normalized;
-		}
-		if (Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 0) {
-			moveDir = new Vector2(0, 0);
-		}
+		Vector2 moveDir = migrationInput.GetInputAxis();
 		VelocityDir = moveDir;
 		return moveDir;
 	}
+
 	/// <summary>
 	/// 碰撞检测
 	/// </summary>
@@ -141,18 +149,39 @@ public class Player {
 		unit = UnitExist();
 		if (unit != null && unit.GetController() != null) {
 			interactive = unit.GetController().GetComponent<Interactive>();
-			if (Input.GetKeyDown(KeyCode.Space)) {
-				interactive.Interaction();
+			if(interactive != null) {
+				if (migrationInput.GetInputInteraction()) {
+					interactive.Interaction(controller);
+				}
 			}
 		}
+	}
+
+	public void OpenTechTree() {
+		notInTechTree = false;
+		myEventSystem.SetActive(true);
+		RecipeMenu.SetActive(true);
+        myEventSystem.GetComponent<EventSystem> ().SetSelectedGameObject(firstSelectedGameObject);
+	}
+	public void CloseTechTree() {
+		RecipeMenu.SetActive(false);
+		myEventSystem.SetActive(false);
+		notInTechTree = true;
 	}
 }
 
 
 [ExecuteInEditMode]
 public class PlayerController : MonoBehaviour {
+	public string currentStateName;
+	public IEnumerator currentState;
 	public MapController mapController;
 	public Player player;	 
+	public AnimationClipPlayer ClipPlayer {
+		get {
+			return GetComponentInChildren<AnimationClipPlayer>();
+		}
+	}
     public Vector2 Position {
         get {
             return transform.position;
@@ -161,8 +190,12 @@ public class PlayerController : MonoBehaviour {
             transform.position = new Vector3(value.x, value.y, transform.position.z);
         }
     }
+
+	private MigrationInput migrationInput;
 	public void Start() {
 		player.map = mapController.map;
+		this.migrationInput = GetComponent<MigrationInput>();
+		player.migrationInput = this.migrationInput;
 	}
 	private void OnDrawGizmosSelected() {
 		Vector2[] borders = new Vector2[]{
@@ -185,11 +218,69 @@ public class PlayerController : MonoBehaviour {
 			Gizmos.DrawLine(start, end);
 		}
 	}
-	public void Update() {
-		player.PositionInMap = mapController.map.WorldToMapPoint(Position);
-		if(!Application.isEditor || Application.isPlaying) {
-			player.Update();
+	public IEnumerator Main() {
+		player.controller = this;
+		currentState = Idle();
+		yield return StartCoroutine(currentState);
+	}
+	public IEnumerator Idle() {
+		currentStateName = "Idle";
+		while(true) {
+			yield return null;
+			player.PositionInMap = mapController.map.WorldToMapPoint(Position);
+			if(!Application.isEditor || Application.isPlaying) {
+				player.Update();
+			}
+			Vector2 direction = mapController.map.MapToWorldDirection(player.Forward);
+			if(ClipPlayer != null) {
+				string clipName = "";
+				if(direction.normalized.y > 0.8f) {
+					clipName = "Top";
+				}
+				else if(direction.normalized.y < -0.8f) {
+					clipName = "Down";
+				}
+				else if(direction.normalized.x > 0) {
+					clipName = "Right";
+				}
+				else {
+					clipName = "Left";
+				}
+
+				if(player.VelocityDir.magnitude > 0.1f) {
+					clipName += "Walk";
+				}
+				else {
+					clipName += "Stand";
+				}
+				ClipPlayer.PlayClip(clipName);
+			}
+			Position = mapController.map.MapToWorldPoint(player.PositionInMap);
 		}
-		Position = mapController.map.MapToWorldPoint(player.PositionInMap);
+	}
+	public bool CouldMoveHouse() {
+		return true;
+	}
+	public void UseEnerge() {
+
+	}
+	public void ChangeState(IEnumerator next) {
+		StopCoroutine(currentState);
+		currentState = next;
+		StartCoroutine(next);
+	}
+	public IEnumerator HandledHouse(House house, Vector2 local) {
+		currentStateName = "HandledHouse";
+		while(true) {
+			yield return null;
+			player.PositionInMap = house.LocalToMap(local);
+			Position = mapController.map.MapToWorldPoint(player.PositionInMap);
+			UnHandledInputProcess(house);
+		}
+	}
+	private void UnHandledInputProcess(House house) {
+		if(player.migrationInput.GetInputInteraction()) {
+			house.UnHandled(this);
+		}
 	}
 }

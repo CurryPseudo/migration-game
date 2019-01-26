@@ -44,7 +44,7 @@ public class Map : IMap {
         List<IMapUnit> units = new List<IMapUnit>();
         foreach(var unit in GetAllUnits()) {
             bool ifAdd = true;
-            foreach(var pos in unit.GetPositions()) {
+            foreach(var pos in unit.GetPositionsInt()) {
                 if(!(pos.x >= 0 && pos.x < size.x && pos.y >= 0 && pos.y < size.y)) {
                     unit.GetController().gameObject.SetActive(false);
                     ifAdd = false;
@@ -70,7 +70,7 @@ public class Map : IMap {
     }
     public Vector2Int WorldToMapPointClampedRounded(Vector2 worldPoint) {
         Vector2 result = WorldToMapPointClamped(worldPoint);
-        return new Vector2Int(Mathf.RoundToInt(result.x), Mathf.RoundToInt(result.y));
+        return Vector2Util.RoundToInt(result);
     }
     public Vector2 WorldToMapPointClamped(Vector2 worldPoint) {
         //Debug.Log("world: " + worldPoint.ToString());
@@ -93,6 +93,9 @@ public class Map : IMap {
         //Debug.Log("to world: " + result);
         return result;
     }
+    public Vector2 MapToWorldDirection(Vector2 direction) {
+        return MapToWorldPoint(direction) - MapToWorldPoint(Vector2.zero);
+    }
     public bool AreaEmpty(IEnumerable<Vector2Int> positions) {
         foreach(Vector2Int position in positions) {
             if(GetMapUnit(position) != null) return false;
@@ -100,9 +103,9 @@ public class Map : IMap {
         return true;
     }
     public void InsertMapUnit(IMapUnit unit) {
-        Debug.Assert(AreaEmpty(unit.GetPositions()));
+        Debug.Assert(AreaEmpty(unit.GetPositionsInt()));
         unitPositionsMap.Add(unit, new List<Vector2Int>());
-        foreach(var pos in unit.GetPositions()) {
+        foreach(var pos in unit.GetPositionsInt()) {
             SetMapUnit(pos, unit);
             unitPositionsMap[unit].Add(pos);
         }
@@ -114,7 +117,7 @@ public class Map : IMap {
     }
     public void UpdateMapUnit(IMapUnit unit) {
         DeleteMapUnit(unit);
-        Debug.Assert(AreaEmpty(unit.GetPositions()));
+        Debug.Assert(AreaEmpty(unit.GetPositionsInt()));
         InsertMapUnit(unit);
     }
     public void DeleteMapUnit(IMapUnit unit) {
