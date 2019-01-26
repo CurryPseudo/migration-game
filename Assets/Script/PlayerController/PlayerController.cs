@@ -8,18 +8,21 @@ public class Player {
 
 	public Vector2 PositionInMap = new Vector2(0, 0);
 	public float Speed;
-	public Vector2 fiction = new Vector2(0.5f, 0.5f);
-
-
+	// public Vector2 fiction = new Vector2(0.5f, 0.5f);
 	public IMap map;
 	public float playerRadius = 0.25f;
+	public float interactiveRadius = 0.4f;
+
 	private	Vector2 VelocityDir = new Vector2(0, 0);
+	private Vector2 Forward = new Vector2(0, 0);
+	private Vector2 currentMapUnit;
 
 
 	public void Update() {
 		GetMoveDirection();
 		CheckCollision();
 		Move();
+		Debug.Log(ItemExist());
 	}
 
 
@@ -29,33 +32,33 @@ public class Player {
 	private Vector2 GetMoveDirection() {
 		Vector2 moveDir = new Vector2(0, 0);
 		if (Input.GetAxisRaw("Horizontal") > 0.9f) {
-			VelocityDir = new Vector2(1, -1).normalized;
+			moveDir = new Vector2(1, -1).normalized;
 		}
 		if (Input.GetAxisRaw("Horizontal") < -0.9f) {
-			VelocityDir = new Vector2(-1, 1).normalized;
+			moveDir = new Vector2(-1, 1).normalized;
 		}
 		if (Input.GetAxisRaw("Vertical") > 0.9f) {
-			VelocityDir = new Vector2(1, 1).normalized;
+			moveDir = new Vector2(1, 1).normalized;
 		}
 		if (Input.GetAxisRaw("Vertical") < -0.9f) {
-			VelocityDir = new Vector2(-1, -1).normalized;
+			moveDir = new Vector2(-1, -1).normalized;
 		}
 		if (Input.GetAxisRaw("Horizontal") > 0.5f && Input.GetAxisRaw("Vertical") > 0.5f) {
-			VelocityDir = new Vector2(1, 0).normalized;
+			moveDir = new Vector2(1, 0).normalized;
 		}
 		if (Input.GetAxisRaw("Horizontal") > 0.5f && Input.GetAxisRaw("Vertical") < -0.5f) {
-			VelocityDir = new Vector2(0, -1).normalized;
+			moveDir = new Vector2(0, -1).normalized;
 		}
 		if (Input.GetAxisRaw("Horizontal") < -0.5f && Input.GetAxisRaw("Vertical") > 0.5f) {
-			VelocityDir = new Vector2(0, 1).normalized;
+			moveDir = new Vector2(0, 1).normalized;
 		}
 		if (Input.GetAxisRaw("Horizontal") < -0.5f && Input.GetAxisRaw("Vertical") < -0.5f) {
-			VelocityDir = new Vector2(-1, 0).normalized;
+			moveDir = new Vector2(-1, 0).normalized;
 		}
 		if (Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 0) {
-			VelocityDir = new Vector2(0, 0);
+			moveDir = new Vector2(0, 0);
 		}
-		moveDir = VelocityDir;
+		VelocityDir = moveDir;
 		return moveDir;
 	}
 	/// <summary>
@@ -104,7 +107,7 @@ public class Player {
 			Vector2 y_Aix = new Vector2(0, 1);
 			Vector2 checkedUnit = new Vector2(Mathf.FloorToInt(vertexInMapUnit[0].x + 0.5f), Mathf.FloorToInt(vertexInMapUnit[0].y + 0.5f));
 			float angle = Vector2.SignedAngle(x_Aix, vertexInMapUnit[0] - checkedUnit);
-			Debug.Log(i + " , " + angle);
+			// Debug.Log(i + " , " + angle);
 			if (angle <= 45 && angle >-45) collisionDir = x_Aix * Mathf.Sin((float)Math.PI / 4);
 			else if (angle <= 135 && angle >45) collisionDir = y_Aix * Mathf.Sin((float)Math.PI / 4);
 			else if (angle <= -45 && angle >-135) collisionDir = -y_Aix * Mathf.Sin((float)Math.PI / 4);
@@ -114,12 +117,23 @@ public class Player {
 			}
 			// Debug.Log(collisionDir);
 		}
-
 		VelocityDir = moveDir + collisionDir;
 	}
 	public void Move() {
 		PositionInMap.x += VelocityDir.x * Speed * Time.deltaTime;
 		PositionInMap.y += VelocityDir.y * Speed * Time.deltaTime;
+	}
+
+	public IMapUnit ItemExist() {
+		if (GetMoveDirection() != Vector2.zero) {
+			Forward = GetMoveDirection().normalized;
+		}
+		Vector2 checkedPoint = PositionInMap + Forward * interactiveRadius;
+		Vector2 checkedUnit = new Vector2(Mathf.FloorToInt(checkedPoint.x + 0.5f), Mathf.FloorToInt(checkedPoint.y + 0.5f));
+		if (map.GetMapUnit((int)checkedUnit.x, (int)checkedUnit.y) != null) {
+			return map.GetMapUnit((int)checkedUnit.x, (int)checkedUnit.y);
+		}
+		return null;
 	}
 }
 
