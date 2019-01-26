@@ -16,7 +16,7 @@ public class Player {
 	private	Vector2 VelocityDir = new Vector2(0, 0);
 	private Vector2 Forward = new Vector2(0, 0);
 	private Vector2 currentMapUnit;
-
+	internal MigrationInput migrationInput;
 
 	public void Update() {
 		GetMoveDirection();
@@ -30,37 +30,11 @@ public class Player {
 	/// 玩家控制的方向
 	/// </summary>
 	private Vector2 GetMoveDirection() {
-		Vector2 moveDir = new Vector2(0, 0);
-		if (Input.GetAxisRaw("Horizontal") > 0.9f) {
-			moveDir = new Vector2(1, -1).normalized;
-		}
-		if (Input.GetAxisRaw("Horizontal") < -0.9f) {
-			moveDir = new Vector2(-1, 1).normalized;
-		}
-		if (Input.GetAxisRaw("Vertical") > 0.9f) {
-			moveDir = new Vector2(1, 1).normalized;
-		}
-		if (Input.GetAxisRaw("Vertical") < -0.9f) {
-			moveDir = new Vector2(-1, -1).normalized;
-		}
-		if (Input.GetAxisRaw("Horizontal") > 0.5f && Input.GetAxisRaw("Vertical") > 0.5f) {
-			moveDir = new Vector2(1, 0).normalized;
-		}
-		if (Input.GetAxisRaw("Horizontal") > 0.5f && Input.GetAxisRaw("Vertical") < -0.5f) {
-			moveDir = new Vector2(0, -1).normalized;
-		}
-		if (Input.GetAxisRaw("Horizontal") < -0.5f && Input.GetAxisRaw("Vertical") > 0.5f) {
-			moveDir = new Vector2(0, 1).normalized;
-		}
-		if (Input.GetAxisRaw("Horizontal") < -0.5f && Input.GetAxisRaw("Vertical") < -0.5f) {
-			moveDir = new Vector2(-1, 0).normalized;
-		}
-		if (Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 0) {
-			moveDir = new Vector2(0, 0);
-		}
+		Vector2 moveDir = migrationInput.GetInputAxis();
 		VelocityDir = moveDir;
 		return moveDir;
 	}
+
 	/// <summary>
 	/// 碰撞检测
 	/// </summary>
@@ -141,7 +115,7 @@ public class Player {
 		unit = UnitExist();
 		if (unit != null && unit.GetController() != null) {
 			interactive = unit.GetController().GetComponent<Interactive>();
-			if (Input.GetKeyDown(KeyCode.Space)) {
+			if (migrationInput.GetInputInteraction()) {
 				interactive.Interaction();
 			}
 		}
@@ -161,8 +135,12 @@ public class PlayerController : MonoBehaviour {
             transform.position = new Vector3(value.x, value.y, transform.position.z);
         }
     }
+
+	private MigrationInput migrationInput;
 	public void Start() {
 		player.map = mapController.map;
+		this.migrationInput = GetComponent<MigrationInput>();
+		player.migrationInput = this.migrationInput;
 	}
 	private void OnDrawGizmosSelected() {
 		Vector2[] borders = new Vector2[]{
