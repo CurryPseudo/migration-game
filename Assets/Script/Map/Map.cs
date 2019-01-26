@@ -93,6 +93,9 @@ public class Map : IMap {
         //Debug.Log("to world: " + result);
         return result;
     }
+    public Vector2 MapToWorldDirection(Vector2 direction) {
+        return MapToWorldPoint(direction) - MapToWorldPoint(Vector2.zero);
+    }
     public bool AreaEmpty(IEnumerable<Vector2Int> positions) {
         foreach(Vector2Int position in positions) {
             if(GetMapUnit(position) != null) return false;

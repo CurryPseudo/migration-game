@@ -15,8 +15,9 @@ public class Player {
 	public float playerRadius = 0.25f;
 	public float interactiveRadius = 0.4f;
 
-	private	Vector2 VelocityDir = new Vector2(0, 0);
-	private Vector2 Forward = new Vector2(0, 0);
+	public Vector2 VelocityDir = new Vector2(0, 0);
+	public Vector2 Forward = new Vector2(0, 0);
+	public Vector2 WorldForward;
 	private Vector2 currentMapUnit;
 	internal MigrationInput migrationInput;
 
@@ -25,6 +26,7 @@ public class Player {
 		CheckCollision();
 		Move();
 		InteracitonTrigger();
+		WorldForward = controller.mapController.map.MapToWorldDirection(Forward).normalized;
 	}
 
 
@@ -131,6 +133,11 @@ public class PlayerController : MonoBehaviour {
 	public IEnumerator currentState;
 	public MapController mapController;
 	public Player player;	 
+	public AnimationClipPlayer ClipPlayer {
+		get {
+			return GetComponentInChildren<AnimationClipPlayer>();
+		}
+	}
     public Vector2 Position {
         get {
             return transform.position;
@@ -179,6 +186,30 @@ public class PlayerController : MonoBehaviour {
 			player.PositionInMap = mapController.map.WorldToMapPoint(Position);
 			if(!Application.isEditor || Application.isPlaying) {
 				player.Update();
+			}
+			Vector2 direction = mapController.map.MapToWorldDirection(player.Forward);
+			if(ClipPlayer != null) {
+				string clipName = "";
+				if(direction.normalized.y > 0.8f) {
+					clipName = "Top";
+				}
+				else if(direction.normalized.y < -0.8f) {
+					clipName = "Down";
+				}
+				else if(direction.normalized.x > 0) {
+					clipName = "Right";
+				}
+				else {
+					clipName = "Left";
+				}
+
+				if(player.VelocityDir.magnitude > 0.1f) {
+					clipName += "Walk";
+				}
+				else {
+					clipName += "Stand";
+				}
+				ClipPlayer.PlayClip(clipName);
 			}
 			Position = mapController.map.MapToWorldPoint(player.PositionInMap);
 		}
