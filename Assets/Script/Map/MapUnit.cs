@@ -11,7 +11,7 @@ public class OutsideMapUnit : IMapUnit
 {
     public MapUnitController GetController()
     {
-        throw new System.NotImplementedException();
+        return null;
     }
 
     public IEnumerable<Vector2Int> GetLastPositions()
