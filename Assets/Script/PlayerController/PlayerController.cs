@@ -22,7 +22,7 @@ public class Player {
 		GetMoveDirection();
 		CheckCollision();
 		Move();
-		Debug.Log(ItemExist());
+		InteracitonTrigger();
 	}
 
 
@@ -124,7 +124,7 @@ public class Player {
 		PositionInMap.y += VelocityDir.y * Speed * Time.deltaTime;
 	}
 
-	public IMapUnit ItemExist() {
+	public IMapUnit UnitExist() {
 		if (GetMoveDirection() != Vector2.zero) {
 			Forward = GetMoveDirection().normalized;
 		}
@@ -134,6 +134,17 @@ public class Player {
 			return map.GetMapUnit((int)checkedUnit.x, (int)checkedUnit.y);
 		}
 		return null;
+	}
+	public void InteracitonTrigger() {
+		IMapUnit unit;
+		Interactive interactive;
+		unit = UnitExist();
+		if (unit != null) {
+			interactive = unit.GetController().GetComponent<Interactive>();
+			if (Input.GetKeyDown(KeyCode.Space)) {
+				interactive.Interaction();
+			}
+		}
 	}
 }
 
