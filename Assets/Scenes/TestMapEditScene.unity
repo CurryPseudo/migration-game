@@ -156,6 +156,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a523b6e1641c40bd93c75a1143e80aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentStateName: Idle
   mapController: {fileID: 1319628843}
   player:
     PositionInMap: {x: 0, y: -0}
@@ -214,6 +215,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c353d4ce72954bd4a0bf5923284b760, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rounded: 1
+  clamped: 1
   mapController: {fileID: 1319628843}
   mapPosition: {x: 6, y: 1}
 --- !u!212 &63652893
@@ -269,7 +272,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 63652891}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.1013103, y: 3.993138, z: 0}
+  m_LocalPosition: {x: 4.770127, y: 2.0900002, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2007744907}
@@ -403,6 +406,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c353d4ce72954bd4a0bf5923284b760, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rounded: 1
+  clamped: 1
   mapController: {fileID: 1319628843}
   mapPosition: {x: 4, y: 2}
 --- !u!114 &77783343
@@ -416,6 +421,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98cf447d1806f4b1b97dbc54c854b431, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
 --- !u!114 &77783344
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -456,6 +470,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c353d4ce72954bd4a0bf5923284b760, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rounded: 1
+  clamped: 1
   mapController: {fileID: 1319628843}
   mapPosition: {x: 6, y: 2}
 --- !u!212 &381430583
@@ -511,7 +527,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 381430581}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.2352848, y: 4.4931383, z: 0}
+  m_LocalPosition: {x: 3.9041014, y: 2.5900002, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2007744907}
@@ -709,6 +725,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c353d4ce72954bd4a0bf5923284b760, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rounded: 1
+  clamped: 1
   mapController: {fileID: 1319628843}
   mapPosition: {x: 5, y: 1}
 --- !u!212 &1068636132
@@ -764,7 +782,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1068636130}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.2352848, y: 3.493138, z: 0}
+  m_LocalPosition: {x: 3.9041014, y: 1.59, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2007744907}
@@ -822,6 +840,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a523b6e1641c40bd93c75a1143e80aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentStateName: Idle
   mapController: {fileID: 1319628843}
   player:
     PositionInMap: {x: 1.2030641, y: 2.2769356}
@@ -882,6 +901,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c353d4ce72954bd4a0bf5923284b760, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rounded: 1
+  clamped: 1
   mapController: {fileID: 1319628843}
   mapPosition: {x: 5, y: 2}
 --- !u!212 &1283920821
@@ -937,7 +958,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1283920819}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.3692594, y: 3.993138, z: 0}
+  m_LocalPosition: {x: 3.038076, y: 2.0900002, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2007744907}
@@ -2588,6 +2609,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2007744907}
   - component: {fileID: 2007744906}
+  - component: {fileID: 2007744908}
   m_Layer: 0
   m_Name: Group
   m_TagString: Untagged
@@ -2629,7 +2651,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2007744905}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.2288165, y: -0.49313807, z: 0.9707591}
+  m_LocalPosition: {x: -0.44, y: 1.41, z: 0.9707591}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1068636133}
@@ -2639,3 +2661,34 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2007744908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2007744905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbc02d17fdf864d5e804a7945f049831, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: currentState
+      Entry: 6
+      Data: 
+  movingSpeed: 1
+  unitController: {fileID: 2007744906}
+  mapController: {fileID: 1319628843}
+  gridPositions:
+  - {fileID: 1068636131}
+  - {fileID: 381430582}
+  - {fileID: 63652892}
+  - {fileID: 1283920820}
