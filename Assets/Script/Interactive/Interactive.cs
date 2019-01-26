@@ -1,7 +1,8 @@
 using UnityEngine;
+using Sirenix.OdinInspector;
 
-public abstract class Interactive : MonoBehaviour {
+public abstract class Interactive : SerializedMonoBehaviour {
 
-    public abstract void Interaction();
+    public abstract void Interaction(PlayerController player);
 }
 

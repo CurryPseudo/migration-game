@@ -6,6 +6,8 @@ using UnityEngine;
 [Serializable]
 public class Player {
 
+	[NonSerialized]
+	public PlayerController controller;
 	public Vector2 PositionInMap = new Vector2(0, 0);
 	public float Speed;
 	// public Vector2 fiction = new Vector2(0.5f, 0.5f);
@@ -116,7 +118,7 @@ public class Player {
 		if (unit != null && unit.GetController() != null) {
 			interactive = unit.GetController().GetComponent<Interactive>();
 			if (migrationInput.GetInputInteraction()) {
-				interactive.Interaction();
+				interactive.Interaction(controller);
 			}
 		}
 	}
@@ -125,6 +127,8 @@ public class Player {
 
 [ExecuteInEditMode]
 public class PlayerController : MonoBehaviour {
+	public string currentStateName;
+	public IEnumerator currentState;
 	public MapController mapController;
 	public Player player;	 
     public Vector2 Position {
@@ -163,11 +167,45 @@ public class PlayerController : MonoBehaviour {
 			Gizmos.DrawLine(start, end);
 		}
 	}
-	public void Update() {
-		player.PositionInMap = mapController.map.WorldToMapPoint(Position);
-		if(!Application.isEditor || Application.isPlaying) {
-			player.Update();
+	public IEnumerator Main() {
+		player.controller = this;
+		currentState = Idle();
+		yield return StartCoroutine(currentState);
+	}
+	public IEnumerator Idle() {
+		currentStateName = "Idle";
+		while(true) {
+			yield return null;
+			player.PositionInMap = mapController.map.WorldToMapPoint(Position);
+			if(!Application.isEditor || Application.isPlaying) {
+				player.Update();
+			}
+			Position = mapController.map.MapToWorldPoint(player.PositionInMap);
 		}
-		Position = mapController.map.MapToWorldPoint(player.PositionInMap);
+	}
+	public bool CouldMoveHouse() {
+		return true;
+	}
+	public void UseEnerge() {
+
+	}
+	public void ChangeState(IEnumerator next) {
+		StopCoroutine(currentState);
+		currentState = next;
+		StartCoroutine(next);
+	}
+	public IEnumerator HandledHouse(House house, Vector2 local) {
+		currentStateName = "HandledHouse";
+		while(true) {
+			yield return null;
+			player.PositionInMap = house.LocalToMap(local);
+			Position = mapController.map.MapToWorldPoint(player.PositionInMap);
+			UnHandledInputProcess(house);
+		}
+	}
+	private void UnHandledInputProcess(House house) {
+		if(player.migrationInput.GetInputInteraction()) {
+			house.UnHandled(this);
+		}
 	}
 }
