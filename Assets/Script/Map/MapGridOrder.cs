@@ -6,6 +6,6 @@ public class MapGridOrder : MonoBehaviour {
     private void Update() {
         var renderer = GetComponent<SpriteRenderer>();
         var grid = GetComponent<MapGridPosition>();
-        renderer.sortingOrder = -(grid.MapPosition.x + grid.MapPosition.y) * 2;
+        renderer.sortingOrder = -(grid.MapPositionInt.x + grid.MapPositionInt.y) * 2;
     }
 }

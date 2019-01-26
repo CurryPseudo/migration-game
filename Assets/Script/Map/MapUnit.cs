@@ -106,7 +106,7 @@ public class SingleMapUnit : MapUnit
     {
         get
         {
-            return Grid.MapPosition;
+            return Grid.MapPositionInt;
         }
     }
 
@@ -117,7 +117,7 @@ public class SingleMapUnit : MapUnit
 
     public override void SetPosition(Vector2Int originPoint)
     {
-        Grid.MapPosition = originPoint;
+        Grid.MapPositionInt = originPoint;
     }
 }
 public class MultipleMapUnit : MapUnit
@@ -135,12 +135,12 @@ public class MultipleMapUnit : MapUnit
     {
         get
         {
-            return MinGrid().MapPosition;
+            return MinGrid().MapPositionInt;
         }
     }
 
     private int GridValue(MapGridPosition grid) {
-        return grid.MapPosition.x + grid.MapPosition.y;
+        return grid.MapPositionInt.x + grid.MapPositionInt.y;
     }
     public MapGridPosition MinGrid() {
         MapGridPosition min = null;
@@ -155,7 +155,7 @@ public class MultipleMapUnit : MapUnit
     public override IEnumerable<Vector2Int> GetSizeUnitOffset()
     {
         foreach(var grid in GridPositions) {
-            yield return grid.MapPosition - GetOriginPoint();
+            yield return grid.MapPositionInt - GetOriginPoint();
         }
     }
 
@@ -163,7 +163,7 @@ public class MultipleMapUnit : MapUnit
     {
         Vector2Int delta = originPoint - GetOriginPoint();
         foreach(var grid in GridPositions) {
-            grid.MapPosition = grid.MapPosition + delta;
+            grid.MapPositionInt = grid.MapPositionInt + delta;
         }
     }
 }
