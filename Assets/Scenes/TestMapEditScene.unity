@@ -143,7 +143,7 @@ Transform:
   m_Children:
   - {fileID: 1937172042}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &50460964
 MonoBehaviour:
@@ -317,7 +317,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &77783340
 MonoBehaviour:
@@ -427,6 +427,83 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd8645f07a75344b2bbc14877564ef14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &220562374
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 220562376}
+  - component: {fileID: 220562375}
+  m_Layer: 0
+  m_Name: RecipeController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &220562375
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 220562374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8b3b29488eacd848af5b0753aec1bba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  recipes:
+  - name: Shoes
+    cost:
+    - {x: 5, y: 0, z: 0}
+    - {x: 12, y: 0, z: 0}
+    - {x: 4, y: 4, z: 16}
+    Level: 0
+  - name: Wheels
+    cost:
+    - {x: 2, y: 3, z: 4}
+    - {x: 4, y: 4, z: 8}
+    - {x: 5, y: 5, z: 12}
+    Level: 0
+  - name: Axe
+    cost:
+    - {x: 4, y: 0, z: 0}
+    - {x: 4, y: 4, z: 0}
+    - {x: 0, y: 8, z: 8}
+    Level: 0
+  - name: Iron Gloves
+    cost:
+    - {x: 2, y: 2, z: 10}
+    Level: 0
+  - name: Package
+    cost:
+    - {x: 20, y: 0, z: 0}
+    - {x: 0, y: 20, z: 25}
+    Level: 0
+  - name: EarthQuake
+    cost:
+    - {x: 10, y: 10, z: 10}
+    Level: 0
+  - name: shovel
+    cost:
+    - {x: 4, y: 4, z: 4}
+    Level: 0
+  wealthController: {fileID: 0}
+--- !u!4 &220562376
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 220562374}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.30438358, y: 0.085846715, z: 11.828125}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &381430581
 GameObject:
   m_ObjectHideFlags: 0
@@ -840,7 +917,7 @@ Transform:
   m_Children:
   - {fileID: 969588610}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1167976539
 MonoBehaviour:
@@ -2637,5 +2714,54 @@ Transform:
   - {fileID: 63652894}
   - {fileID: 1283920822}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2136188362
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2136188364}
+  - component: {fileID: 2136188363}
+  m_Layer: 0
+  m_Name: WealthController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2136188363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2136188362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7468ec707feb50d44be036d8f875a261, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wealth:
+  - name: Wood
+    count: 0
+  - name: Stone
+    count: 0
+  - name: Iron
+    count: 0
+  - name: Berry
+    count: 0
+--- !u!4 &2136188364
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2136188362}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.30438358, y: 0.085846715, z: 11.828125}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
