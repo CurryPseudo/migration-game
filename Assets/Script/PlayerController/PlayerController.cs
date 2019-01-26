@@ -139,7 +139,7 @@ public class Player {
 		IMapUnit unit;
 		Interactive interactive;
 		unit = UnitExist();
-		if (unit != null) {
+		if (unit != null && unit.GetController() != null) {
 			interactive = unit.GetController().GetComponent<Interactive>();
 			if (Input.GetKeyDown(KeyCode.Space)) {
 				interactive.Interaction();
