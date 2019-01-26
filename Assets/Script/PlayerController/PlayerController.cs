@@ -10,6 +10,7 @@ public class Player {
 	public PlayerController controller;
 	public Vector2 PositionInMap = new Vector2(0, 0);
 	public float Speed;
+	public float PushingSpeed;
 	// public Vector2 fiction = new Vector2(0.5f, 0.5f);
 	public IMap map;
 	public float playerRadius = 0.25f;
