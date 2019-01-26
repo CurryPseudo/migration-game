@@ -47,7 +47,7 @@ public class House : Interactive {
             handledPlayers.Add(playerController);
             playerController.ChangeState(playerController.HandledHouse(this, playerLocal));
         }
-        if(handledPlayers.Count == 1 && PlayerSameSide()) {
+        if(handledPlayers.Count == 2 && PlayerSameSide()) {
             Vector2Int side = PlayerSide(handledPlayers[0]);
             Vector2Int direction = new Vector2Int(-side.x, -side.y);
             if(MapEmpty(direction)) {
