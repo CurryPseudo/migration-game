@@ -10,7 +10,7 @@ public class Player {
 	[NonSerialized]
 	public PlayerController controller;
 	public Vector2 PositionInMap = new Vector2(0, 0);
-	public bool canMove;
+	public bool notInTechTree;
 	public float Speed;
 	public float PushingSpeed;
 	// public Vector2 fiction = new Vector2(0.5f, 0.5f);
@@ -29,11 +29,34 @@ public class Player {
 	internal MigrationInput migrationInput;
 
 	public void Update() {
-		GetMoveDirection();
-		CheckCollision();
-		Move();
-		InteracitonTrigger();
+		if(notInTechTree) {
+			GetMoveDirection();
+			CheckCollision();
+			Move();
+			InteracitonTrigger();
+		}
+		else {
+			VelocityDir = Vector2.zero;
+		}
+		TechTreeTrigger();
 		WorldForward = controller.mapController.map.MapToWorldDirection(Forward).normalized;
+	}
+	public void TechTreeTrigger() {
+		if(migrationInput.OpenTechTree()) {
+			if(notInTechTree) {
+				IMapUnit unit;
+				Interactive interactive;
+				unit = UnitExist();
+				if (unit != null && unit.GetController() != null) {
+					if(unit.GetController().GetComponent<House>() != null) {
+						OpenTechTree();
+					}
+				}
+			}
+			else {
+				CloseTechTree();
+			}
+		}
 	}
 
 
@@ -105,10 +128,8 @@ public class Player {
 		VelocityDir = moveDir + collisionDir;
 	}
 	public void Move() {
-		if (canMove) {
-			PositionInMap.x += VelocityDir.x * Speed * Time.deltaTime;
-			PositionInMap.y += VelocityDir.y * Speed * Time.deltaTime;
-		}
+		PositionInMap.x += VelocityDir.x * Speed * Time.deltaTime;
+		PositionInMap.y += VelocityDir.y * Speed * Time.deltaTime;
 	}
 
 	public IMapUnit UnitExist() {
@@ -135,7 +156,7 @@ public class Player {
 	}
 
 	public void OpenTechTree() {
-		canMove = false;
+		notInTechTree = false;
 		myEventSystem.SetActive(true);
 		RecipeMenu.SetActive(true);
         myEventSystem.GetComponent<EventSystem> ().SetSelectedGameObject(firstSelectedGameObject);
@@ -143,7 +164,7 @@ public class Player {
 	public void CloseTechTree() {
 		RecipeMenu.SetActive(false);
 		myEventSystem.SetActive(false);
-		canMove = true;
+		notInTechTree = true;
 	}
 }
 
@@ -209,7 +230,7 @@ public class PlayerController : MonoBehaviour {
 				player.Update();
 			}
 			Vector2 direction = mapController.map.MapToWorldDirection(player.Forward);
-			if(ClipPlayer != null && player.canMove) {
+			if(ClipPlayer != null) {
 				string clipName = "";
 				if(direction.normalized.y > 0.8f) {
 					clipName = "Top";

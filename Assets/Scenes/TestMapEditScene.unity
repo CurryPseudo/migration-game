@@ -1438,9 +1438,14 @@ MonoBehaviour:
   mapController: {fileID: 1319628843}
   player:
     PositionInMap: {x: -0.021211376, y: -0.043759022}
+    notInTechTree: 1
     Speed: 1.5
+    PushingSpeed: 0
     playerRadius: 0.25
     interactiveRadius: 0.4
+    RecipeMenu: {fileID: 315396397}
+    myEventSystem: {fileID: 2075355382}
+    firstSelectedGameObject: {fileID: 10467519}
     VelocityDir: {x: 0, y: 0}
     Forward: {x: 0, y: 0}
     WorldForward: {x: 0, y: 0}
@@ -19395,9 +19400,14 @@ MonoBehaviour:
   mapController: {fileID: 1319628843}
   player:
     PositionInMap: {x: 0.19354473, y: 1.9071653}
+    notInTechTree: 1
     Speed: 1.5
+    PushingSpeed: 0
     playerRadius: 0.25
     interactiveRadius: 0.4
+    RecipeMenu: {fileID: 315396397}
+    myEventSystem: {fileID: 1460152490}
+    firstSelectedGameObject: {fileID: 10467519}
     VelocityDir: {x: 0, y: 0}
     Forward: {x: 0, y: 0}
     WorldForward: {x: 0, y: 0}
