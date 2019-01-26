@@ -156,9 +156,9 @@ MonoBehaviour:
   mapController: {fileID: 1319628843}
   player:
     PositionInMap: {x: 1, y: 1}
-    Speed: 0.5
-    fiction: {x: 0.5, y: 0.5}
+    Speed: 3
     playerRadius: 0.25
+    interactiveRadius: 0.4
 --- !u!1 &63652891
 GameObject:
   m_ObjectHideFlags: 0
@@ -259,6 +259,7 @@ GameObject:
   - component: {fileID: 77783340}
   - component: {fileID: 77783341}
   - component: {fileID: 77783342}
+  - component: {fileID: 77783343}
   m_Layer: 0
   m_Name: UnitTest
   m_TagString: Untagged
@@ -365,6 +366,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mapController: {fileID: 1319628843}
   mapPosition: {x: 3, y: 3}
+--- !u!114 &77783343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 77783338}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98cf447d1806f4b1b97dbc54c854b431, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &381430581
 GameObject:
   m_ObjectHideFlags: 0
