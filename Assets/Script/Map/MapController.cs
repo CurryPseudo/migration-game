@@ -2,9 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 public class MapController : SerializedMonoBehaviour {
+    public SpriteRenderer blackEffectRenderer;
+    public float blackFadeTime = 2;
     public List<AudioSource> voice;
     public House destroyingHouse = null;
     public new Camera camera;
@@ -80,9 +83,17 @@ public class MapController : SerializedMonoBehaviour {
         if(destroyingHouse != null) {
             voice[2].Play();
             yield return StartCoroutine(destroyingHouse.Destroying());
-            while(true) {
-                yield return null;
+            {
+                float timeCount = 0;
+                while(timeCount < blackFadeTime) {
+                    yield return null;
+                    timeCount += Time.unscaledDeltaTime;
+                    blackEffectRenderer.color = Color.Lerp(Color.clear, Color.black, timeCount / blackFadeTime);
+                }
             }
+            yield return new WaitForSecondsRealtime(1f);
+            Time.timeScale = 1;
+            SceneManager.LoadScene(0);
         }
         else {
             Time.timeScale = 1;
@@ -99,9 +110,16 @@ public class MapController : SerializedMonoBehaviour {
             yield return StartCoroutine(MoveOnProcess());
         }
     }
-    public void Start() {
+    public IEnumerator Main() {
+        blackEffectRenderer.color = Color.black;
         map._Init();
-        StartCoroutine(MainProcess());
+        float timeCount = 0;
+        while(timeCount < blackFadeTime) {
+            yield return null;
+            timeCount += Time.unscaledDeltaTime;
+            blackEffectRenderer.color = Color.Lerp(Color.black, Color.clear, timeCount / blackFadeTime);
+        }
+        yield return StartCoroutine(MainProcess());
     }
     public void Update() {
         
