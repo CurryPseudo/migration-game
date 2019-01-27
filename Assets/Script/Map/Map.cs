@@ -78,7 +78,8 @@ public class Map : IMap {
         }
     }
     public float GetNextMoveOnTime() {
-        return 30f + 1f / 8f * currentScreenX * currentScreenX - 5 * currentScreenX;
+        if(currentScreenX > 20) return 10;
+        return 30f + 1f / 20f * currentScreenX * currentScreenX - 2 * currentScreenX;
     }
     public IEnumerator WaitToMoveOn() {
         for(int i = 0; i < size.y; i++) {

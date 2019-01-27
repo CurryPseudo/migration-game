@@ -3,6 +3,8 @@ using System;
 using System.Collections;
 using UnityEngine;
 using Sirenix.Serialization;
+using UnityEngine.Playables;
+using UnityEngine.Animations;
 
 public class House : Interactive {
     public IEnumerator currentState;
@@ -196,9 +198,10 @@ public class House : Interactive {
         ChangeState(Idle());
     }
     public IEnumerator Destroying() {
-        ClipPlayer.RevertAnimationMixer();
+        ClipPlayer.animationMixer.SetSpeed(0);
         ClipPlayer.PlayClip("Destroy");
-        yield return new WaitForSecondsRealtime(0.6f);
+        yield return new WaitForSecondsRealtime(1.6f);
+        ClipPlayer.animationMixer.SetSpeed(Time.timeScale);
         ClipPlayer.affectedByTimescale = true;
     }
     public void PrepareToDestroy() {
