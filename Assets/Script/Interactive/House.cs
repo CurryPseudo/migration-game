@@ -189,8 +189,9 @@ public class House : Interactive {
         ChangeState(Idle());
     }
     public IEnumerator Destroying() {
+        ClipPlayer.RevertAnimationMixer();
         ClipPlayer.PlayClip("Destroy");
-        yield return new WaitForSecondsRealtime(1);
+        yield return new WaitForSecondsRealtime(0.6f);
         ClipPlayer.affectedByTimescale = true;
     }
     public void PrepareToDestroy() {

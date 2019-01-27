@@ -37,6 +37,9 @@ public class AnimationClipPlayer : MonoBehaviour {
 		}
 		playableGraph.Play();
 	}
+	public void RevertAnimationMixer() {
+		animationMixer.SetSpeed(1);
+	}
 	private void Update() {
 		if(affectedByTimescale) {
 			animationMixer.SetSpeed(Time.timeScale);
