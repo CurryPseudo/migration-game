@@ -6,6 +6,7 @@ using UnityEngine.Animations;
 
 [RequireComponent(typeof(Animator))]
 public class AnimationClipPlayer : MonoBehaviour {
+	public bool affectedByTimescale = true;
 	[Serializable]
 	public struct ClipInfo {
 		public AnimationClip clip;
@@ -18,7 +19,7 @@ public class AnimationClipPlayer : MonoBehaviour {
     private Animator animator;
 	private PlayableGraph playableGraph;
 	private Dictionary<string, int> clipIndexes = new Dictionary<string, int>();
-    private AnimationMixerPlayable animationMixer;
+    public AnimationMixerPlayable animationMixer;
 	public List<ClipInfo> clipInfos;
 	void Awake() {
 		animator = GetComponent<Animator>();
@@ -37,7 +38,12 @@ public class AnimationClipPlayer : MonoBehaviour {
 		playableGraph.Play();
 	}
 	private void Update() {
-		animationMixer.SetSpeed(Time.timeScale);
+		if(affectedByTimescale) {
+			animationMixer.SetSpeed(Time.timeScale);
+		}
+		else {
+			animationMixer.SetSpeed(1);
+		}
 	}
 	public void PlayClip(string clipName) {
 		if(!clipIndexes.ContainsKey(clipName)) {

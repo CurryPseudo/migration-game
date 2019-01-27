@@ -78,7 +78,8 @@ public class Map : IMap {
         }
     }
     public float GetNextMoveOnTime() {
-        return 60f + 1f / 8f * currentScreenX * currentScreenX - 5 * currentScreenX;
+        if(currentScreenX > 20) return 10;
+        return 30f + 1f / 20f * currentScreenX * currentScreenX - 2 * currentScreenX;
     }
     public IEnumerator WaitToMoveOn() {
         for(int i = 0; i < size.y; i++) {
@@ -125,7 +126,14 @@ public class Map : IMap {
                 }
                 var unit = GetMapUnit(currentScreenX, i);
                 if(unit != null) {
-                    unit.GetController().gameObject.SetActive(false);
+                    var controller = unit.GetController();
+                    var house = controller.GetComponent<House>();
+                    if(house != null) {
+                        house.PrepareToDestroy();
+                    }
+                    else {
+                        controller.gameObject.SetActive(false);
+                    }
                 }
             }
         }

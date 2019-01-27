@@ -2,10 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 public class MapController : SerializedMonoBehaviour {
-    public bool gameover = false;
+    public SpriteRenderer blackEffectRenderer;
+    public float blackFadeTime = 2;
+    public List<AudioSource> voice;
+    public House destroyingHouse = null;
     public new Camera camera;
     public Vector2 CameraPosition {
         get {
@@ -41,6 +45,7 @@ public class MapController : SerializedMonoBehaviour {
     }
     public IEnumerator MoveOnProcess() {
         Time.timeScale = 0;
+        voice[0].Play();
         Func<float> getRandom = () => UnityEngine.Random.value * shakeSpeed;
         Vector2 originShake = new Vector2(getRandom(), getRandom());
         {
@@ -59,6 +64,7 @@ public class MapController : SerializedMonoBehaviour {
         yield return new WaitForSecondsRealtime(0.5f);
         map.FallAllCurrentGround();
         yield return new WaitForSecondsRealtime(1f);
+        voice[1].Play();
         Vector2 moveDirection = map.MapToWorldDirection(new Vector2(1, 0));
         float moveTime = moveDirection.magnitude / cameraMoveSpeed;
         {
@@ -74,7 +80,24 @@ public class MapController : SerializedMonoBehaviour {
         }
 
         map.MoveOnActive();
-        Time.timeScale = 1;
+        if(destroyingHouse != null) {
+            voice[2].Play();
+            yield return StartCoroutine(destroyingHouse.Destroying());
+            {
+                float timeCount = 0;
+                while(timeCount < blackFadeTime) {
+                    yield return null;
+                    timeCount += Time.unscaledDeltaTime;
+                    blackEffectRenderer.color = Color.Lerp(Color.clear, Color.black, timeCount / blackFadeTime);
+                }
+            }
+            yield return new WaitForSecondsRealtime(1f);
+            Time.timeScale = 1;
+            SceneManager.LoadScene(1);
+        }
+        else {
+            Time.timeScale = 1;
+        }
         foreach(var player in UnityEngine.Object.FindObjectsOfType<PlayerController>()) {
             var pos = player.player.PositionInMap;
             pos = map.ScreenClamp(pos);
@@ -87,9 +110,16 @@ public class MapController : SerializedMonoBehaviour {
             yield return StartCoroutine(MoveOnProcess());
         }
     }
-    public void Start() {
+    public IEnumerator Main() {
+        blackEffectRenderer.color = Color.black;
         map._Init();
-        StartCoroutine(MainProcess());
+        float timeCount = 0;
+        while(timeCount < blackFadeTime) {
+            yield return null;
+            timeCount += Time.unscaledDeltaTime;
+            blackEffectRenderer.color = Color.Lerp(Color.black, Color.clear, timeCount / blackFadeTime);
+        }
+        yield return StartCoroutine(MainProcess());
     }
     public void Update() {
         

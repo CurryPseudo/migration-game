@@ -43,9 +43,9 @@ public class RecipeController : MonoBehaviour {
 				wealthController.wealth[j].count -= (int)recipes[i].cost[recipes[i].Level][j];
 			}
 			recipes[i].Level++;
+			playerUnit_1.TechCheck(name);
+			playerUnit_2.TechCheck(name);
 		}
-		playerUnit_1.TechCheck(name);
-		playerUnit_2.TechCheck(name);
 	}
 
 	public int GetTechLevel(string name) {

@@ -18,6 +18,10 @@ public class WealthController : MonoBehaviour {
 			}
 			i++;
 		}
+		if (i >= 3) {
+			return;
+		}
+		Debug.Log(i);
 		wealth[i].count += count;
 	}
 
@@ -29,7 +33,7 @@ public class WealthController : MonoBehaviour {
 			}
 			i++;
 		}
-		wealth[i].count += count;
+		wealth[i].count -= count;
 	}
 
 }

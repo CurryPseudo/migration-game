@@ -22,7 +22,8 @@ public class RecipesMenuButton : MonoBehaviour {
 
 	public void ChangeIcon() {
 		int LV = recipeController.GetTechLevel(name);
-		GetComponent<Image>().sprite = sprites[LV];
+		if (LV < sprites.Length)
+			GetComponent<Image>().sprite = sprites[LV];
 	}
 	
 }
