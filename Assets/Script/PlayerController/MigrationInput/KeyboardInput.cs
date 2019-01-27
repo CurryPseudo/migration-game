@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class KeyboardInput : MigrationInput {
 
+	public GameObject PlayerHandle;
+
 	public override Vector2 GetInputAxis() {
 		Vector2 moveDir = new Vector2(0, 0);
 		if (Input.GetAxisRaw("Horizontal") > 0.9f) {
@@ -43,13 +45,7 @@ public class KeyboardInput : MigrationInput {
 			return false;
 	}
 	public override bool OpenTechTree() {
-		if (Input.GetKeyDown(KeyCode.K))
-			return true;
-		else
-			return false;
-	}
-	public override bool CloseTechTree() {
-		if (Input.GetKeyDown(KeyCode.L))
+		if (Input.GetKeyDown(KeyCode.K) && PlayerHandle.GetComponent<PlayerController>().player.notInTechTree)
 			return true;
 		else
 			return false;
