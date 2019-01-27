@@ -18,7 +18,9 @@ public class Player {
 	public float Speed;
 	public float PushingSpeed;
 	public float CollectTime;
+	[Header("UI")]
 	public UIController UI;
+	public Image bagImage;
 	[Header("Move")]
 	public IMap map;
 	public float playerRadius = 0.25f;
@@ -30,6 +32,7 @@ public class Player {
     public GameObject firstSelectedGameObject;
 	public GameObject Canvas;
 	public GameObject SliderPrefab;
+	public string[] package = new string[3];
 	[Header("Voice")]
 	public AudioSource[] voice;
 	public Vector2 VelocityDir = new Vector2(0, 0);
@@ -137,10 +140,10 @@ public class Player {
 		VelocityDir = moveDir + collisionDir;
 	}
 	public void Move() {
-		if (VelocityDir != Vector2.zero && !voice[2].isPlaying) {
+		if ((VelocityDir != Vector2.zero && !voice[2].isPlaying) || (u.isPushingHouse)) {
 			voice[2].Play();
 		}
-		else if (VelocityDir == Vector2.zero) {
+		else if (VelocityDir == Vector2.zero && !u.isPushingHouse) {
 			voice[2].Stop();
 		}
 		PositionInMap.x += VelocityDir.x * Speed * Time.deltaTime;
@@ -173,8 +176,15 @@ public class Player {
 	}
 
 	public void OpenTechTree() {
+		if (bagImage.gameObject.activeSelf == true) {
+			for (int i = 0; i <= 2; i++) {
+				wealthController.AddWealth(package[i], 1);
+				package[i] = "";
+			}
+		}
 		UI.TxtUpdate();
 		u.collectNum = 0;
+		bagImage.gameObject.SetActive(false);
 		voice[0].Play();
 		notInTechTree = false;
 		myEventSystem.SetActive(true);
@@ -194,6 +204,11 @@ public class Player {
 			Debug.Log("采集次数达到上限");
 			yield break;
 		}
+		if (wealth.isCollected == true) {
+			Debug.Log("不能同时采集");
+			yield break;
+		}
+		wealth.isCollected = true;
 		Color color = wealth.GetComponentInChildren<SpriteRenderer>().color;
 		GameObject newSlider = GameObject.Instantiate(SliderPrefab, Canvas.transform);
 		AudioSource collectVoice;
@@ -213,10 +228,12 @@ public class Player {
 		float timeCount = 0;
         while(true) {
 			timeCount += Time.deltaTime;
-			color.a = 1 - timeCount / CollectTime;
-			wealth.GetComponentInChildren<SpriteRenderer>().color = color;
+			if (wealth.count == 1) {
+				color.a = 1 - timeCount / CollectTime;
+				wealth.GetComponentInChildren<SpriteRenderer>().color = color;
+			}
 			newSlider.GetComponent<Slider>().value = timeCount / CollectTime;
-			if (color.a <= 0) {
+			if (newSlider.GetComponent<Slider>().value >= 1) {
 				break;
 			}
             yield return null;
@@ -227,9 +244,15 @@ public class Player {
 			u.ControlMaxEnergy();
 			u.collectNum--;
 		}
-		else
-			wealthController.AddWealth(wealth.name, wealth.count);
-		GameObject.Destroy(wealth.gameObject);
+		else {
+			package[u.collectNum - 1] = wealth.name;
+			wealth.count--;
+		}
+		if (wealth.count == 0) {
+			GameObject.Destroy(wealth.gameObject);
+		}
+		wealth.isCollected = false;
+		bagImage.gameObject.SetActive(true);
 		GameObject.Destroy(newSlider);
 		notInCollect = true;
 		if (collectVoice != null)

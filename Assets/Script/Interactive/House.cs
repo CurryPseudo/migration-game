@@ -128,15 +128,22 @@ public class House : Interactive {
     }
     public IEnumerator Moving(Vector2Int direction) {
         stateName = "Moving";
+        
         List<PlayerController> relasePlayers = new List<PlayerController>();
         unHandledAction = (playerController) => {
             if(!relasePlayers.Contains(playerController)) {
                 relasePlayers.Add(playerController);
             }
-
         };
         PlayerHundle.isPushingHouse = true;
         PlayerKeyboard.isPushingHouse = true;
+        if(!PlayerHundle.EnergyCost() || !PlayerKeyboard.EnergyCost()) {
+            unHandledAction = null;
+            PlayerHundle.isPushingHouse = false;
+            PlayerKeyboard.isPushingHouse = false;
+            ChangeState(Idle());
+        }
+        
         while(true) {
             foreach(var player in handledPlayers) {
                 player.UseEnerge();

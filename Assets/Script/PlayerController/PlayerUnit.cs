@@ -44,7 +44,7 @@ public class PlayerUnit : MonoBehaviour {
 			GetComponent<PlayerController>().player.CollectTime -= addCollectTime;
 		}
 		if (techName.Equals("Iron Gloves")) {
-			Cost *= 0.75f;
+			Cost *= 0.5f;
 		}
 		if (techName.Equals("Package")) {
 			MaxCollectNum += 1;
