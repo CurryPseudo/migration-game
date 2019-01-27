@@ -125,7 +125,14 @@ public class Map : IMap {
                 }
                 var unit = GetMapUnit(currentScreenX, i);
                 if(unit != null) {
-                    unit.GetController().gameObject.SetActive(false);
+                    var controller = unit.GetController();
+                    var house = controller.GetComponent<House>();
+                    if(house != null) {
+                        house.PrepareToDestroy();
+                    }
+                    else {
+                        controller.gameObject.SetActive(false);
+                    }
                 }
             }
         }
