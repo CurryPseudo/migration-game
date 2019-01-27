@@ -49,6 +49,7 @@ public class Player {
 			InteracitonTrigger();
 		}
 		else {
+			voice[2].Stop();
 			VelocityDir = Vector2.zero;
 		}
 		TechTreeTrigger();
@@ -360,6 +361,7 @@ public class PlayerController : MonoBehaviour {
 		StartCoroutine(next);
 	}
 	public IEnumerator HandledHouse(House house, Vector2 local) {
+		player.voice[2].Stop();
 		currentStateName = "HandledHouse";
 		while(true) {
 			yield return null;
