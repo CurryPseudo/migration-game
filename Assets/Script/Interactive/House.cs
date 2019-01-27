@@ -147,7 +147,7 @@ public class House : Interactive {
             var start = unitController.mapUnit.GetOriginPointInt();
             var end = start + direction;
             Vector2 housePos = start;
-            float moveTime = 1 / movingSpeed;
+            float moveTime = 1 / (movingSpeed + handledPlayers[0].player.PushingSpeed);
             {
                 float timeCount = 0;
                 while(timeCount < moveTime) {
