@@ -9,6 +9,7 @@ public class RecipesMenuButton : MonoBehaviour {
 	[Header("Color")]
 	public Color ActiveColor;
 	public Color NegativeColor;
+	public Sprite[] sprites;
 
 	private void Update() {
 		if (recipeController.CanMake(name)) {
@@ -17,6 +18,11 @@ public class RecipesMenuButton : MonoBehaviour {
 		else {
 			GetComponent<Image>().color = NegativeColor;
 		}
+	}
+
+	public void ChangeIcon() {
+		int LV = recipeController.GetTechLevel(name);
+		GetComponent<Image>().sprite = sprites[LV];
 	}
 	
 }
