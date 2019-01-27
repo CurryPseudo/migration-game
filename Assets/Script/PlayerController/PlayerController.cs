@@ -219,6 +219,9 @@ public class Player {
 		else if (wealth.name.Equals("Stone") || wealth.name.Equals("Iron")) {
 			collectVoice = voice[4];
 		}
+		else if (wealth.name.Equals("Berry")){
+			collectVoice = voice[5];
+		}
 		else {
 			collectVoice = null;
 		}

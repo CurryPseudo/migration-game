@@ -19,7 +19,7 @@ public class AnimationClipPlayer : MonoBehaviour {
     private Animator animator;
 	private PlayableGraph playableGraph;
 	private Dictionary<string, int> clipIndexes = new Dictionary<string, int>();
-    private AnimationMixerPlayable animationMixer;
+    public AnimationMixerPlayable animationMixer;
 	public List<ClipInfo> clipInfos;
 	void Awake() {
 		animator = GetComponent<Animator>();
@@ -36,9 +36,6 @@ public class AnimationClipPlayer : MonoBehaviour {
 			clipIndex++;
 		}
 		playableGraph.Play();
-	}
-	public void RevertAnimationMixer() {
-		animationMixer.SetSpeed(1);
 	}
 	private void Update() {
 		if(affectedByTimescale) {
