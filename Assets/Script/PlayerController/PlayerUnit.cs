@@ -14,9 +14,17 @@ public class PlayerUnit : MonoBehaviour {
 
 	public bool isPushingHouse = false;
 
-	public void EnergyCost() {
-		if (isPushingHouse) {
-			Energy -= Cost;
+	private void Update() {
+		EnergyCost();
+	}
+
+	public bool EnergyCost() {
+		if (isPushingHouse && Energy >= 0) {
+			Energy -= Cost * Time.deltaTime;
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
 	public void ControlMaxEnergy() {

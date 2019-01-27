@@ -18,6 +18,8 @@ public class Player {
 	public float Speed;
 	public float PushingSpeed;
 	public float CollectTime;
+	public UIController UI;
+	[Header("Move")]
 	public IMap map;
 	public float playerRadius = 0.25f;
 	public float interactiveRadius = 0.4f;
@@ -28,6 +30,8 @@ public class Player {
     public GameObject firstSelectedGameObject;
 	public GameObject Canvas;
 	public GameObject SliderPrefab;
+	[Header("Voice")]
+	public AudioSource[] voice;
 	public Vector2 VelocityDir = new Vector2(0, 0);
 	public Vector2 Forward = new Vector2(0, 0);
 	public Vector2 WorldForward;
@@ -133,6 +137,12 @@ public class Player {
 		VelocityDir = moveDir + collisionDir;
 	}
 	public void Move() {
+		if (VelocityDir != Vector2.zero && !voice[2].isPlaying) {
+			voice[2].Play();
+		}
+		else if (VelocityDir == Vector2.zero) {
+			voice[2].Stop();
+		}
 		PositionInMap.x += VelocityDir.x * Speed * Time.deltaTime;
 		PositionInMap.y += VelocityDir.y * Speed * Time.deltaTime;
 	}
@@ -163,13 +173,17 @@ public class Player {
 	}
 
 	public void OpenTechTree() {
+		UI.TxtUpdate();
 		u.collectNum = 0;
+		voice[0].Play();
 		notInTechTree = false;
 		myEventSystem.SetActive(true);
 		RecipeMenu.SetActive(true);
         myEventSystem.GetComponent<EventSystem> ().SetSelectedGameObject(firstSelectedGameObject);
 	}
 	public void CloseTechTree() {
+		UI.TxtUpdate();
+		voice[1].Play();
 		RecipeMenu.SetActive(false);
 		myEventSystem.SetActive(false);
 		notInTechTree = true;
@@ -182,6 +196,18 @@ public class Player {
 		}
 		Color color = wealth.GetComponentInChildren<SpriteRenderer>().color;
 		GameObject newSlider = GameObject.Instantiate(SliderPrefab, Canvas.transform);
+		AudioSource collectVoice;
+		if (wealth.name.Equals("Wood")) {
+			collectVoice = voice[3];
+		}
+		else if (wealth.name.Equals("Stone") || wealth.name.Equals("Iron")) {
+			collectVoice = voice[4];
+		}
+		else {
+			collectVoice = null;
+		}
+		if (collectVoice != null)
+			collectVoice.Play();
 		newSlider.transform.position = Camera.main.WorldToScreenPoint(wealth.transform.position + new Vector3(0, 1.5f, 0));
 		notInCollect = false;
 		float timeCount = 0;
@@ -195,16 +221,19 @@ public class Player {
 			}
             yield return null;
         }
+		u.collectNum++;
 		if (wealth.name.Equals("Berry")) {
 			u.Energy += 25;
 			u.ControlMaxEnergy();
+			u.collectNum--;
 		}
 		else
 			wealthController.AddWealth(wealth.name, wealth.count);
-		u.collectNum++;
 		GameObject.Destroy(wealth.gameObject);
 		GameObject.Destroy(newSlider);
 		notInCollect = true;
+		if (collectVoice != null)
+			collectVoice.Stop();
 	}
 }
 

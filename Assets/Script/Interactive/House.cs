@@ -11,6 +11,9 @@ public class House : Interactive {
     public MapUnitController unitController;
     public MapController mapController;
     public List<MapGridPosition> gridPositions = new List<MapGridPosition>();
+    [Header("Player")]
+    public PlayerUnit PlayerKeyboard;
+    public PlayerUnit PlayerHundle;
     private List<PlayerController> handledPlayers = new List<PlayerController>();
     public AnimationClipPlayer ClipPlayer {
         get {
@@ -132,6 +135,8 @@ public class House : Interactive {
             }
 
         };
+        PlayerHundle.isPushingHouse = true;
+        PlayerKeyboard.isPushingHouse = true;
         while(true) {
             foreach(var player in handledPlayers) {
                 player.UseEnerge();
@@ -174,8 +179,13 @@ public class House : Interactive {
                     break;
                 }
             }
+            if(!PlayerHundle.EnergyCost() || !PlayerKeyboard.EnergyCost()) {
+                break;
+            }
         }
         unHandledAction = null;
+        PlayerHundle.isPushingHouse = false;
+        PlayerKeyboard.isPushingHouse = false;
         ChangeState(Idle());
     }
     private void OnDisable() {
