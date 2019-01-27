@@ -188,7 +188,14 @@ public class House : Interactive {
         PlayerKeyboard.isPushingHouse = false;
         ChangeState(Idle());
     }
-    private void OnDisable() {
-        mapController.gameover = true;
+    public IEnumerator Destroying() {
+        ClipPlayer.PlayClip("Destroy");
+        yield return new WaitForSecondsRealtime(1);
+        ClipPlayer.affectedByTimescale = true;
+    }
+    public void PrepareToDestroy() {
+        GetComponent<MapUnitController>().enabled = false;
+        ClipPlayer.affectedByTimescale = false;
+        mapController.destroyingHouse = this;
     }
 }

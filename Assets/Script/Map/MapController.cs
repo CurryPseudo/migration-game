@@ -5,7 +5,8 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 public class MapController : SerializedMonoBehaviour {
-    public bool gameover = false;
+    public List<AudioSource> voice;
+    public House destroyingHouse = null;
     public new Camera camera;
     public Vector2 CameraPosition {
         get {
@@ -41,6 +42,7 @@ public class MapController : SerializedMonoBehaviour {
     }
     public IEnumerator MoveOnProcess() {
         Time.timeScale = 0;
+        voice[0].Play();
         Func<float> getRandom = () => UnityEngine.Random.value * shakeSpeed;
         Vector2 originShake = new Vector2(getRandom(), getRandom());
         {
@@ -59,6 +61,7 @@ public class MapController : SerializedMonoBehaviour {
         yield return new WaitForSecondsRealtime(0.5f);
         map.FallAllCurrentGround();
         yield return new WaitForSecondsRealtime(1f);
+        voice[1].Play();
         Vector2 moveDirection = map.MapToWorldDirection(new Vector2(1, 0));
         float moveTime = moveDirection.magnitude / cameraMoveSpeed;
         {
@@ -74,7 +77,16 @@ public class MapController : SerializedMonoBehaviour {
         }
 
         map.MoveOnActive();
-        Time.timeScale = 1;
+        if(destroyingHouse != null) {
+            voice[2].Play();
+            yield return StartCoroutine(destroyingHouse.Destroying());
+            while(true) {
+                yield return null;
+            }
+        }
+        else {
+            Time.timeScale = 1;
+        }
         foreach(var player in UnityEngine.Object.FindObjectsOfType<PlayerController>()) {
             var pos = player.player.PositionInMap;
             pos = map.ScreenClamp(pos);
