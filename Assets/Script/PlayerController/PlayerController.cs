@@ -194,6 +194,11 @@ public class Player {
 			Debug.Log("采集次数达到上限");
 			yield break;
 		}
+		if (wealth.isCollected == true) {
+			Debug.Log("不能同时采集");
+			yield break;
+		}
+		wealth.isCollected = true;
 		Color color = wealth.GetComponentInChildren<SpriteRenderer>().color;
 		GameObject newSlider = GameObject.Instantiate(SliderPrefab, Canvas.transform);
 		AudioSource collectVoice;

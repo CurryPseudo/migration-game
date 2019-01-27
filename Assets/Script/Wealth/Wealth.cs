@@ -6,6 +6,7 @@ public class Wealth : Interactive {
 
   public new string name;
 	public int count;
+  public bool isCollected = false;
 
     public override void Interaction(PlayerController playerController)
     {
