@@ -358,7 +358,7 @@ public class PlayerController : MonoBehaviour {
 		return true;
 	}
 	public void UseEnerge() {
-
+		
 	}
 	public void ChangeState(IEnumerator next) {
 		StopCoroutine(currentState);
