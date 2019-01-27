@@ -247,6 +247,7 @@ public class Player {
 			u.Energy += 25;
 			u.ControlMaxEnergy();
 			u.collectNum--;
+			wealth.count--;
 		}
 		else {
 			package[u.collectNum - 1] = wealth.name;
@@ -256,7 +257,8 @@ public class Player {
 			GameObject.Destroy(wealth.gameObject);
 		}
 		wealth.isCollected = false;
-		bagImage.gameObject.SetActive(true);
+		if (u.collectNum > 0)
+			bagImage.gameObject.SetActive(true);
 		GameObject.Destroy(newSlider);
 		notInCollect = true;
 		if (collectVoice != null)
